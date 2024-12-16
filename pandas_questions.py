@@ -16,9 +16,9 @@ import matplotlib.pyplot as plt
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
-    referendum=pd.read_csv("data//referendum.csv", sep=";", header=0)
-    regions = pd.read_csv("data//regions.csv", sep = ";", header = 0)
-    departments = pd.read_csv("data//departments.csv", sep = ";", header = 0)
+    referendum = pd.read_csv("data/referendum.csv", sep=";", header=0)
+    regions = pd.read_csv("data/regions.csv", sep=";", header=0)
+    departments = pd.read_csv("data/departments.csv", sep=";", header=0)
 
     return referendum, regions, departments
 
@@ -29,10 +29,15 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    regions=regions.rename(columns={'code': 'code_reg', 'name': 'name_reg'})
-    departments=departments.rename(columns={'code': 'code_dep', 'name': 'name_dep', 'region_code': 'code_reg'})
-    merged_df=pd.merge(regions, departments, on = 'code_reg')
-    merged_df=merged_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
+    regions = regions.rename(columns={'code': 'code_reg'})
+    departments = departments.rename(columns={'region_code': 'code_reg'})
+    merged_df = pd.merge(regions, departments, on='code_reg')
+
+    # Rename columns for clarity
+    merged_df = merged_df.rename(
+        columns={'name_x': 'name_reg',
+                 'code': 'code_dep',
+                 'name_y': 'name_dep'})
 
     return merged_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
 
@@ -42,9 +47,9 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-    
-    referendum = referendum.rename(columns={'Department code': 'code_dep','Department name': 'name_dep'})
-    merged_df1 = pd.merge(referendum, regions_and_departments, on = 'code_dep')
+
+    referendum = referendum.rename(columns={'Department code': 'code_dep', 'Department name': 'name_dep'})
+    merged_df1 = pd.merge(referendum, regions_and_departments, on='code_dep')
     dom_tom_com_list = [
         'ZA', 'ZB', 'ZC', 'ZD',
         'ZM', 'ZN', 'ZP', 'ZS',
@@ -52,6 +57,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     ]
     merged_df1 = merged_df1.drop(merged_df1[merged_df1['code_dep'].isin(dom_tom_com_list)].index)
     merged_df1 = merged_df1.drop(merged_df1[merged_df1['name_dep'].str.contains('FRANCAIS DE L\'ETRANGER')].index)
+
     return merged_df1
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -60,10 +66,10 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    df = referendum_and_areas.groupby(['code_reg', 'name_reg'],as_index = True).sum()[
-        ['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
-    df.reset_index(inplace = True)
-    df.set_index('code_reg', inplace = True)
+    df = referendum_and_areas.groupby(['code_reg', 'name_reg'], as_index=True).sum()[
+        ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
+    df.reset_index(inplace=True)
+    df.set_index('code_reg', inplace=True)
 
     return referendum_and_areas['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
 
@@ -79,8 +85,8 @@ def plot_referendum_map(referendum_result_by_regions):
     regions_geo = gpd.read_file("data//regions.geojson")
     referendum_geo = referendum_result_by_regions.merge(
         regions_geo,
-        left_on = "code_reg",
-        right_on = "code"
+        left_on="code_reg",
+        right_on="code"
     )
     referendum_geo = gpd.GeoDataFrame(data=referendum_geo)
     referendum_geo["ratio"] = (
