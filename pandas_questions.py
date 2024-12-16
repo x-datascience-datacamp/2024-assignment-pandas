@@ -50,7 +50,7 @@ def merge_regions_and_departments(regions, departments):
 
 def process_0_starting_codes(code_dep):
     """
-    Remove starting '0' in department codes
+    Remove starting '0' in department codes.
 
     '01' -> '1'
     """
@@ -66,7 +66,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
     regions_and_departments["code_dep"] = (
         regions_and_departments["code_dep"].apply(
             process_0_starting_codes
