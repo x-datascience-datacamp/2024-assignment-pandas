@@ -73,7 +73,6 @@ def compute_referendum_result_by_regions(
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-
     return (
         referendum_and_areas[
             [
