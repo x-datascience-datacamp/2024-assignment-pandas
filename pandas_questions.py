@@ -1,3 +1,10 @@
+"""
+This module contains functions to load referendum data, merge it with region
+and department information, compute referendum results by region, and plot
+the results on a map using GeoPandas.
+"""
+
+
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
