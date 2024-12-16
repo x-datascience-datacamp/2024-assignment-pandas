@@ -37,10 +37,12 @@ def merge_regions_and_departments(regions, departments):
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
 
-    Exclude lines related to DOM-TOM-COM departments and French citizens living abroad.
+    Exclude lines related to DOM-TOM-COM departments, and the
+    french living abroad.
     """
     referendum = referendum[~referendum["Department code"].str.startswith('Z')]
-    regions_and_departments["code_dep"] = regions_and_departments["code_dep"].str.lstrip('0')
+    regions_and_departments["code_dep"] = regions_and_departments["code_dep"] \
+        .str.lstrip('0')
     merged = pd.merge(
         referendum,
         regions_and_departments,
