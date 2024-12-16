@@ -56,13 +56,12 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    region_summary = referendum_and_areas.groupby(['code_reg',
-                                                   'name_reg']).sum()
-    [[
-        'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B'
-    ]].reset_index()
-    region_summary.set_index('code_reg', inplace=True)
-    return region_summary
+    referendum_result_by_regions = referendum_and_areas.groupby(
+        ['code_reg', 'name_reg']).sum()[
+            ['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
+            ].reset_index()
+    referendum_result_by_regions.set_index('code_reg', inplace=True)
+    return referendum_result_by_regions
 
 
 def plot_referendum_map(referendum_result_by_regions):
