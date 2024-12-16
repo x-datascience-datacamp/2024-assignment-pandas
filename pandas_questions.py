@@ -127,7 +127,10 @@ def plot_referendum_map(referendum_result_by_regions):
         how='left'
     )
 
-    merged_df['ratio'] = merged_df['Choice A'] / (merged_df['Choice A'] + merged_df['Choice B'])
+    merged_df['ratio'] = (
+        merged_df['Choice A'] /
+        (merged_df['Choice A'] + merged_df['Choice B'])
+        )
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 8))
     merged_df.plot(
