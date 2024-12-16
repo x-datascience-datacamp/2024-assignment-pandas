@@ -59,7 +59,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     referendum_result_by_regions = referendum_and_areas.groupby(
         ['code_reg', 'name_reg']).sum()[
             ['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
-            ].reset_index()
+        ].reset_index()
     referendum_result_by_regions.set_index('code_reg', inplace=True)
     return referendum_result_by_regions
 
