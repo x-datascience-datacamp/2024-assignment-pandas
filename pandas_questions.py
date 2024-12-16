@@ -33,7 +33,9 @@ def merge_regions_and_departments(regions, departments):
         regions
         .filter(["code", "name"])
         .merge(departments.filter(["region_code", "code", "name"]),
-               left_on="code", right_on="region_code", suffixes=("_reg", "_dep"))
+               left_on="code",
+               right_on="region_code",
+               suffixes=("_reg", "_dep"))
         .drop(columns="region_code")
         .filter(['code_reg', 'name_reg', 'code_dep', 'name_dep'])
     )
@@ -48,10 +50,16 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
 
     return (
         referendum
-        .merge(regions_and_departments, left_on="Department code", right_on="code_dep")
-        .query("name_dep != 'FRANCAIS HORS DE FRANCE'")
-        .query("code_reg != 'COM'")
-        .drop(columns=["Department name", "Department code"])
+        .assign(
+            code_dep=lambda x: x["Department code"].apply(
+                lambda x: f"0{x}" if len(x) == 1 else x
+            )
+        )
+        .query("`Department code` not in ['ZA', 'ZB', 'ZC', 'ZD', 'ZM', 'ZN', 'ZP', 'ZS', 'ZW', 'ZX', 'ZZ']")
+        .merge(regions_and_departments,
+               left_on="code_dep",
+               right_on="code_dep",
+               how="left")
     )
 
 
@@ -67,6 +75,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         .set_index("code_reg")
         .groupby("name_reg")[
             ["Registered", "Abstentions", "Null", "Choice A", "Choice B"]].sum()
+        .reset_index()
     )
 
 
