@@ -24,10 +24,10 @@ def load_data():
 
 def merge_regions_and_departments(regions, departments):
     """Merge regions and departments in one DataFrame.
+    
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-
     reg_and_dep = pd.merge(
         regions, departments, left_on="code", right_on="region_code"
         )
