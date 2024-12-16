@@ -12,7 +12,6 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
-#Second test
 def load_data():
     referendum = pd.read_csv("data/referendum.csv", sep=';')
     regions = pd.read_csv("data/regions.csv")
