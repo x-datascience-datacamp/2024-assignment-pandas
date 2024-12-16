@@ -46,6 +46,9 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     """
     regions_and_departments = regions_and_departments.loc[
         regions_and_departments['code_dep'].str.len() <= 2]
+    referendum.loc[
+        (referendum['Department code'].str.len() == 1), 'Department code'] = \
+        '0' + referendum['Department code']
     referendum['code_dep'] = referendum['Department code']
 
     return pd.merge(referendum, regions_and_departments, on='code_dep')
