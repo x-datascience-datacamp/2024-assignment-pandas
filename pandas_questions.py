@@ -1,7 +1,9 @@
-"""
-This module contains functions to load referendum data, merge it with region
-and department information, compute referendum results by region, and plot
-the results on a map using GeoPandas.
+"""Plotting referendum results in pandas.
+
+In short, we want to make beautiful maps to report results of a referendum. In
+some way, we would like to depict results with something similar to the maps
+that you can find here:
+https://github.com/x-datascience-datacamp/datacamp-assignment-pandas/blob/main/example_map.png
 """
 
 
