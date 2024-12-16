@@ -14,11 +14,12 @@ import matplotlib.pyplot as plt
 
 DATA_PATH = './data/'
 
+
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
     referendum = pd.read_csv(DATA_PATH + 'referendum.csv', sep=';')
     regions = pd.read_csv(DATA_PATH + 'regions.csv')
-    departments = pd.read_csv(DATA_PATH + 'departments.csv')    
+    departments = pd.read_csv(DATA_PATH + 'departments.csv')
 
     return referendum, regions, departments
 
