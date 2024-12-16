@@ -58,7 +58,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
     referendum_result_by_regions = referendum_and_areas.groupby('code_reg')[[
-        'Registered', 'Abstentions', 'Choice A', 'Choice B']].sum()
+        'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']].sum()
     region_codes_and_names = referendum_and_areas[[
         'code_reg', 'name_reg']].drop_duplicates()
 
