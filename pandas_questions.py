@@ -120,4 +120,3 @@ if __name__ == "__main__":
 
     # Plot the referendum results on a map
     plot_referendum_map(referendum_results)
-
