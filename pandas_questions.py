@@ -29,7 +29,9 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
 
-    return pd.DataFrame({})
+    merged = pd.merge(regions, departments, on='code_dep')
+
+    return merged.DataFrame({})
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
@@ -38,7 +40,11 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
+    merged = pd.merge(referendum, regions_and_departments, on='code_reg')
+    merged = merged.dropna(subset=['code_reg'])
+    merged = merged.dropna(subset=['code_dep'])
+    merged = merged.dropna(subset=['name_reg'])
+    merged = merged.dropna(subset=['name_dep'])
     return pd.DataFrame({})
 
 
@@ -48,8 +54,15 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
+    result = referendum_and_areas.groupby('code_reg').agg({
+        'Registered': 'sum',
+        'Abstentions': 'sum',
+        'Null': 'sum',
+        'Choice A': 'sum',
+        'Choice B': 'sum'
+    })
 
-    return pd.DataFrame({})
+    return result.DataFrame({})
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -61,7 +74,11 @@ def plot_referendum_map(referendum_result_by_regions):
       should display the rate of 'Choice A' over all expressed ballots.
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
-
+    gdf = gpd.read_file('regions.geojson')
+    gdf = gdf.rename(columns={'code': 'code_reg'})
+    merged = pd.merge(gdf, referendum_result_by_regions, on='code_reg')
+    merged['ratio'] = merged['Chose A']/(merged['Chose A'] + merged['Chose B'])
+    merged.plot(column='ratio', legend=True)
     return gpd.GeoDataFrame({})
 
 
