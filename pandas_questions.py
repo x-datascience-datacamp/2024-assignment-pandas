@@ -33,8 +33,8 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
     merged_df = pd.merge(
-        departments, regions, left_on = 'region_code', right_on = 'code',
-        suffixes = ('_dep', '_reg')
+        departments, regions, left_on='region_code', right_on='code',
+        suffixes=('_dep', '_reg')
     )
 
     merged_df = merged_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
@@ -55,8 +55,8 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         ~regions_and_departments['code_reg'].isin(['COM'])
     ]
     merge_df = pd.merge(
-        referendum, regions_and_departments, 
-        left_on = 'Department code', right_on = 'code_dep'
+        referendum, regions_and_departments,
+        left_on='Department code', right_on='code_dep'
     )
 
     return merge_df
@@ -75,12 +75,12 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     # Merge with the region names
     result = result.reset_index()
     result = pd.merge(
-        result, 
+        result,
         referendum_and_areas[['code_reg', 'name_reg']].drop_duplicates(),
-        on = 'code_reg', how = 'left'
+        on='code_reg', how='left'
     )
     result = result[['name_reg', 'Registered',
-    'Abstentions', 'Null', 'Choice A', 'Choice B']]
+                     'Abstentions', 'Null', 'Choice A', 'Choice B']]
 
     return result
 
@@ -96,14 +96,14 @@ def plot_referendum_map(referendum_result_by_regions):
     """
     regions_geo = gpd.read_file("data/regions.geojson")
     merged_data = pd.merge(
-        regions_geo, referendum_result_by_regions, 
-        left_on = 'nom', right_on = 'name_reg'
+        regions_geo, referendum_result_by_regions,
+        left_on='nom', right_on='name_reg'
     )
     merged_data['ratio'] = merged_data['Choice A'] / (
         merged_data['Choice A'] + merged_data['Choice B']
     )
     ax = merged_data.plot(
-        column = 'ratio', legend = True, figsize = (10, 10), cmap = 'coolwarm'
+        column='ratio', legend=True, figsize=(10, 10), cmap='coolwarm'
     )
     ax.set_title("Referendum Results: Choice A Rate by Region")
 
@@ -117,7 +117,9 @@ if __name__ == "__main__":
         referendum, regions_and_departments
     )
     referendum_results = compute_referendum_result_by_regions(
-    referendum_and_areas)
+        referendum_and_areas
+    )
     print(referendum_results)
     plot_referendum_map(referendum_results)
     plt.show()
+
