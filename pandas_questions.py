@@ -24,7 +24,7 @@ def load_data():
 
 def merge_regions_and_departments(regions, departments):
     """Merge regions and departments in one DataFrame.
-    
+
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
@@ -104,7 +104,8 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     )
     regional_results.set_index("code_reg", inplace=True)
     regional_results = regional_results[
-        ["name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"]
+        ["name_reg", "Registered", "Abstentions",
+         "Null", "Choice A", "Choice B"]
     ]
     return regional_results
 
@@ -120,7 +121,8 @@ def plot_referendum_map(referendum_result_by_regions):
     """
     geo_data = gpd.read_file("./data/regions.geojson")
     merged = geo_data.merge(
-        referendum_result_by_regions, left_on="code", right_index=True, how="left"
+        referendum_result_by_regions, left_on="code", right_index=True,
+        how="left"
     )
     merged["expressed_ballots"] = (
         merged["Registered"] - merged["Abstentions"] - merged["Null"]
