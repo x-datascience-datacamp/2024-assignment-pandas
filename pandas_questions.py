@@ -9,9 +9,9 @@ To do that, you will load the data as pandas.DataFrame, merge the info and
 aggregate them by regions and finally plot them on a map using `geopandas`.
 """
 
-import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def load_data():
@@ -30,7 +30,11 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
     merged_df = pd.merge(
-        regions, departments, left_on="code", right_on="region_code", how="left"
+        regions,
+        departments,
+        left_on="code",
+        right_on="region_code",
+        how="left"
     ).rename(
         columns={
             "code_x": "code_reg",
@@ -63,8 +67,10 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
 
-    regions_and_departments["code_dep"] = regions_and_departments["code_dep"].apply(
-        process_0_starting_codes
+    regions_and_departments["code_dep"] = (
+        regions_and_departments["code_dep"].apply(
+            process_0_starting_codes
+        )
     )
 
     merged_df = pd.merge(
@@ -150,7 +156,9 @@ if __name__ == "__main__":
     referendum_and_areas = merge_referendum_and_areas(
         referendum, regions_and_departments
     )
-    referendum_results = compute_referendum_result_by_regions(referendum_and_areas)
+    referendum_results = compute_referendum_result_by_regions(
+        referendum_and_areas
+        )
 
     print(plot_referendum_map(referendum_results).head())
     plt.show()
