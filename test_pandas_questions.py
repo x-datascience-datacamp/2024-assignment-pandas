@@ -12,7 +12,7 @@ from pandas_questions import compute_referendum_result_by_regions
 def test_load_data():
     referendum, regions, departments = load_data()
 
-    df_ref = pd.read_csv('data/referendum.csv', sep=';')
+    df_ref = pd.read_csv('data/referendum.csv', sep=";")
     assert set(referendum.columns) == set(df_ref.columns)
 
     df_reg = pd.read_csv('data/regions.csv')
