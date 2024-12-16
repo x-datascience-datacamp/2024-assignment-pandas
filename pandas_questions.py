@@ -39,8 +39,7 @@ def merge_regions_and_departments(regions, departments):
     # Rename columns for clarity and merging
     regions = regions.rename(columns={"code": "code_reg", "name": "name_reg"})
     departments = departments.rename(
-        columns={"code": "code_dep",
-                 "name": "name_dep", "region_code": "code_reg"}
+        columns={"code": "code_dep", "name": "name_dep", "region_code": "code_reg"}
     )
 
     # Merge departments with regions
@@ -74,8 +73,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
 
     # Merge referendum data with filtered mainland departments
     merged = pd.merge(
-        referendum, mainland_departments,
-        left_on="Department code", right_on="code_dep"
+        referendum, mainland_departments, left_on="Department code", right_on="code_dep"
     )
 
     # Drop redundant column
@@ -129,9 +127,9 @@ def plot_referendum_map(referendum_result_by_regions, geojson_path):
     merged = geo_regions.merge(
         referendum_result_by_regions, left_on="code", right_index=True
     )
+
     # Compute the ratio of 'Choice A' over all expressed votes
-    merged["ratio"] = merged["Choice A"] / (
-        merged["Choice A"] + merged["Choice B"])
+    merged["ratio"] = merged["Choice A"] / (merged["Choice A"] + merged["Choice B"])
 
     # Plot the map
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
@@ -159,16 +157,13 @@ if __name__ == "__main__":
     )
 
     # Merge regions and departments
-    regions_and_departments = merge_regions_and_departments
-    (regions, departments)
+    regions_and_departments = merge_regions_and_departments(regions, departments)
 
     # Merge referendum results with areas
-    referendum_and_areas = merge_referendum_and_areas
-    (referendum, regions_and_departments)
+    referendum_and_areas = merge_referendum_and_areas(referendum, regions_and_departments)
 
     # Compute aggregated results by region
-    referendum_results = compute_referendum_result_by_regions
-    (referendum_and_areas)
+    referendum_results = compute_referendum_result_by_regions(referendum_and_areas)
 
     print("Referendum Results by Region:")
     print(referendum_results)
