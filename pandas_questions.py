@@ -51,7 +51,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     referendum["Department code"] = referendum["Department code"].apply(
         lambda x: x.zfill(2)
     )
-
     merged = pd.merge(
         regions_and_departments,
         referendum,
