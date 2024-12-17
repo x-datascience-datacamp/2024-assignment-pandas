@@ -1,3 +1,8 @@
+"""
+This module provides functions to load and analyze referendum data,
+merge with regional information, and produce a geographic visualization.
+"""
+
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -71,6 +76,7 @@ def merge_regions_and_departments(regions, departments):
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """
     Merge the referendum data with the merged regions/departments data.
+
     Excludes DOM-TOM-COM departments and French living abroad (department codes
     starting with 'Z').
 
@@ -145,8 +151,6 @@ def plot_referendum_map(referendum_result_by_regions):
     ----------
     referendum_result_by_regions : pd.DataFrame
         Aggregated referendum results by region.
-    geojson_path : str
-        Path to the GeoJSON file containing the regions' geometry.
 
     Returns
     -------
@@ -168,8 +172,8 @@ def plot_referendum_map(referendum_result_by_regions):
     )
 
     expressed = merged_geo["Choice A"] + merged_geo["Choice B"]
-    sum = expressed.where(expressed != 0, 1)
-    merged_geo['ratio'] = merged_geo['Choice A']/sum
+    sum_expr = expressed.where(expressed != 0, 1)
+    merged_geo['ratio'] = merged_geo['Choice A'] / sum_expr
     merged_geo = gpd.GeoDataFrame(merged_geo)
     merged_geo.plot(column="ratio", legend=True, cmap='RdYlGn')
 
