@@ -11,7 +11,7 @@ aggregate them by regions and finally plot them on a map using `geopandas`.
 
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import geopandas as gpd
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
@@ -32,16 +32,12 @@ def merge_regions_and_departments(regions, departments):
     # Rename columns for clarity
     regions = regions.rename(columns={"code": "code_reg", "name": "name_reg"})
     departments = departments.rename(
-        columns={"code": "code_dep", "name": "name_dep"}
-    )
+        columns={"code": "code_dep", "name": "name_dep"})
 
     # Merge regions and departments on the region code
     merged_df = pd.merge(
-        departments,
-        regions,
-        left_on="region_code",
-        right_on="code_reg",
-        how="left",
+        departments, regions, left_on="region_code",
+        right_on="code_reg", how="left"
     )
 
     # Select required columns
@@ -84,8 +80,9 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     """
     # Group the data by 'code_reg' and aggregate the counts
     grouped = referendum_and_areas.groupby(
-        ["code_reg", "name_reg"], as_index=False
-    )[["Registered", "Abstentions", "Null", "Choice A", "Choice B"]].sum()
+        ["code_reg", "name_reg"], as_index=False)[
+        ["Registered", "Abstentions", "Null", "Choice A", "Choice B"]
+    ].sum()
 
     # Set 'code_reg' as the index of the resulting DataFrame
     grouped.set_index("code_reg", inplace=True)
@@ -108,18 +105,16 @@ def plot_referendum_map(referendum_result_by_regions):
     )  # Load the regions' geographic data
 
     # Merge geographic data with referendum results
-
+    
     merged = regions_geo.merge(
         referendum_result_by_regions,
-        left_on="code",
-        right_index=True,
+        left_on="code",  
+        right_index=True,  
         how="left",
     )
     print(merged)
     # Compute the ratio of 'Choice A' over all expressed ballots
-    merged["ratio"] = merged["Choice A"] / (
-        merged["Choice A"] + merged["Choice B"]
-    )
+    merged["ratio"] = merged["Choice A"] / (merged["Choice A"] + merged["Choice B"])
 
     # Plot the map
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
@@ -147,9 +142,7 @@ if __name__ == "__main__":
         regions_and_departments,
     )
 
-    referendum_results = compute_referendum_result_by_regions(
-        referendum_and_areas
-    )
+    referendum_results = compute_referendum_result_by_regions(referendum_and_areas)
     print(referendum_results)
 
     plot_referendum_map(referendum_results)
