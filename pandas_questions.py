@@ -42,7 +42,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     ref_filter = referendum[~referendum["Department code"].str.startswith("Z")]
     dep_code = ref_filter["Department code"]
     for i in range(len(dep_code)):
-        if len(dep_code[i])==1:
+        if len(dep_code[i]) == 1:
             ref_filter["Department code"][i] = "0"+dep_code[i]
     merged_data = pd.merge(regions_and_departments, ref_filter,
                            left_on="code_dep", right_on="Department code",
@@ -62,7 +62,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
                                                  'Null',
                                                  'Choice A',
                                                  'Choice B']]
-    return referendum_and_areas.groupby(['name_reg'], as_index = False).sum()
+    return referendum_and_areas.groupby(['name_reg'], as_index=False).sum()
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -75,13 +75,14 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     gdf = gpd.read_file("data/regions.geojson")
-    ref_res_regions_coor = pd.merge(referendum_result_by_regions,
-                                              gdf,
-                                              left_on="name_reg", right_on="nom")
-    ref_res_regions_coor = gpd.GeoDataFrame(ref_res_regions_coor)
-    print(ref_res_regions_coor.plot("Choice A", legend=True))
-    ref_res_regions_coor["ratio"] = ref_res_regions_coor["Choice A"] / ref_res_regions_coor[["Choice A", "Choice B"]].sum(axis=1)
-    return ref_res_regions_coor
+    ref_res_reg_coor = pd.merge(referendum_result_by_regions,
+                                gdf,
+                                left_on="name_reg", right_on="nom")
+    ref_res_reg_coor = gpd.GeoDataFrame(ref_res_reg_coor)
+    print(ref_res_reg_coor.plot("Choice A", legend=True))
+    sum_choice = ref_res_reg_coor[["Choice A", "Choice B"]].sum(axis=1)
+    ref_res_reg_coor["ratio"] = ref_res_reg_coor["Choice A"] / sum_choice
+    return ref_res_reg_coor
 
 
 if __name__ == "__main__":
