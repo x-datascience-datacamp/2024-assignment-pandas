@@ -26,9 +26,7 @@ def test_merge_regions_and_departments():
 
     referendum, df_reg, df_dep = load_data()
 
-    regions_and_departments = merge_regions_and_departments(
-        df_reg, df_dep
-    )
+    regions_and_departments = merge_regions_and_departments(df_reg, df_dep)
 
     assert set(regions_and_departments.columns) == set([
         'code_reg', 'name_reg', 'code_dep', 'name_dep'
