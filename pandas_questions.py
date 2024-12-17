@@ -44,13 +44,19 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
+    regions_and_departments['code_dep'
+                            ] = regions_and_departments['code_dep'
+                                                        ].str.lstrip('0')
     result_df = pd.merge(
-        referendum,
         regions_and_departments,
-        left_on="Department code",
-        right_on="code_dep"
+        referendum,
+        left_on="code_dep",
+        right_on="Department code",
+        how="right"
     )
-    result_df = result_df[~result_df["code_reg"].isin(["DOM", "TOM", "COM"])]
+    result_df = result_df[~result_df["code_reg"].isin(["COM", "TOM", "DOM"])]
+    result_df = result_df[~result_df["Department code"].str.contains("Z")]
+    result_df.dropna(inplace=True)
     return result_df
 
 
@@ -91,7 +97,7 @@ def plot_referendum_map(referendum_result_by_regions):
                 edgecolor="black", linewidth=0.5,
                 legend_kwds={"label": "Choice A ratio"})
     plt.title("Referendum results")
-    return merged["ratio"]
+    return merged
 
 
 if __name__ == "__main__":
