@@ -105,7 +105,6 @@ def plot_referendum_map(referendum_result_by_regions):
     res = gdf.merge(referendum_result_by_regions, on='name_reg')
     res['ratio'] = res['Choice A'] / (res['Choice A'] +
                                       res['Choice B'])
-    # + res['Null'] + res['Abstentions'])
     res.plot(column='ratio', legend=True)
 
     print(res)
