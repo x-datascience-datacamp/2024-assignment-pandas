@@ -15,9 +15,12 @@ import matplotlib.pyplot as plt
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
-    referendum = pd.DataFrame({})
-    regions = pd.DataFrame({})
-    departments = pd.DataFrame({})
+
+    global path
+    path = "data/"
+    referendum = pd.read_csv(path + "referendum.csv", sep=";")
+    regions = pd.read_csv(path + "regions.csv")
+    departments = pd.read_csv(path + "departments.csv")
 
     return referendum, regions, departments
 
@@ -29,7 +32,11 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
 
-    return pd.DataFrame({})
+    df = pd.merge(departments, regions, left_on="region_code", right_on="code")
+    df = df[["code_x", "name_x", "code_y", "name_y"]]
+    df.columns = ['code_dep', 'name_dep', 'code_reg', 'name_reg']
+
+    return df
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
@@ -39,7 +46,12 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
 
-    return pd.DataFrame({})
+    referendum['Department code'] = referendum['Department code'].str.zfill(2)
+    df = pd.merge(referendum, regions_and_departments,
+                  left_on="Department code", right_on="code_dep")
+    # by performing inner join the unwanted regions are automaticallly dropped
+
+    return df
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -49,7 +61,12 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
 
-    return pd.DataFrame({})
+    df = referendum_and_areas.groupby('name_reg')[['Registered', 'Abstentions',
+                                                   'Null', 'Choice A',
+                                                   'Choice B']].sum()
+    df.reset_index()
+
+    return df
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -62,7 +79,14 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
 
-    return gpd.GeoDataFrame({})
+    geo = gpd.read_file(path + 'regions.geojson')
+    merged_gdf = geo.merge(referendum_result_by_regions, left_on="nom",
+                           right_on='name_reg')
+    merged_gdf.drop('nom', axis=1, inplace=True)
+    merged_gdf['ratio'] = merged_gdf['Choice A']/(merged_gdf['Choice A']
+                                                  + merged_gdf['Choice B'])
+
+    return merged_gdf
 
 
 if __name__ == "__main__":
