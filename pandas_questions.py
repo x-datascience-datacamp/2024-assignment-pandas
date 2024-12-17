@@ -18,7 +18,6 @@ def load_data():
     referendum = pd.read_csv('data/referendum.csv', sep=';')
     regions = pd.read_csv('data/regions.csv')
     departments = pd.read_csv('data/departments.csv')
-
     return referendum, regions, departments
 
 
@@ -28,8 +27,9 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    merged_data = pd.merge(regions, departments, left_on="code", right_on="region_code", suffixes=('_reg', '_dep'))
-    
+    merged_data = pd.merge(regions, departments, 
+                           left_on="code", right_on="region_code"
+                           , suffixes=('_reg', '_dep'))
     return merged_data[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
 
 
@@ -39,14 +39,13 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-    referendum_filter = referendum[~referendum["Department code"].str.startswith("Z")]
-    for i in range(len(referendum_filter["Department code"])):
-        if len(referendum_filter["Department code"][i])==1:
-            referendum_filter["Department code"][i] = "0"+referendum_filter["Department code"][i]
-    
-    #referendum_filter["Department code"] = referendum_filter["Department code"][referendum_filter["Department code"].str.len()==1]
-    merged_data = pd.merge(regions_and_departments, referendum_filter, left_on="code_dep", right_on="Department code", how="inner")
-    
+    ref_filter = referendum[~referendum["Department code"].str.startswith("Z")]
+    for i in range(len(ref_filter["Department code"])):
+        if len(ref_filter["Department code"][i])==1:
+            ref_filter["Department code"][i] = "0"+ref_filter["Department code"][i]
+    merged_data = pd.merge(regions_and_departments, ref_filter, 
+                           left_on="code_dep", right_on="Department code", 
+                           how="inner")
     return merged_data
 
 
@@ -56,8 +55,13 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    
-    return referendum_and_areas[['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']].groupby(['name_reg'], as_index = False).sum()
+    referendum_and_areas = referendum_and_areas[['name_reg', 
+                                                 'Registered', 
+                                                 'Abstentions', 
+                                                 'Null', 
+                                                 'Choice A', 
+                                                 'Choice B']]
+    return referendum_and_areas.groupby(['name_reg'], as_index = False).sum()
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -69,17 +73,13 @@ def plot_referendum_map(referendum_result_by_regions):
       should display the rate of 'Choice A' over all expressed ballots.
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
-    
-    import geopandas as gpd
-    
     gdf = gpd.read_file("data/regions.geojson")
-    referendum_result_by_regions_merge_coor = pd.merge(referendum_result_by_regions, gdf, 
+    referendum_result_regions_coor = pd.merge(referendum_result_by_regions, gdf, 
                                                        left_on="name_reg", right_on="nom")
-    referendum_result_by_regions_merge_coor = gpd.GeoDataFrame(referendum_result_by_regions_merge_coor)
-    print(referendum_result_by_regions_merge_coor.plot("Choice A", legend=True))
-    referendum_result_by_regions_merge_coor["ratio"] = referendum_result_by_regions_merge_coor["Choice A"] / referendum_result_by_regions_merge_coor[["Choice A", "Choice B"]].sum(axis=1)
-    
-    return referendum_result_by_regions_merge_coor
+    referendum_result_regions_coor = gpd.GeoDataFrame(referendum_result_regions_coor)
+    print(referendum_result_regions_coor.plot("Choice A", legend=True))
+    referendum_result_regions_coor["ratio"] = referendum_result_regions_coor["Choice A"] / referendum_result_regions_coor[["Choice A", "Choice B"]].sum(axis=1)
+    return referendum_result_regions_coor
 
 
 if __name__ == "__main__":
