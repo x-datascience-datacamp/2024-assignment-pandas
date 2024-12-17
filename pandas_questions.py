@@ -88,30 +88,13 @@ def plot_referendum_map(referendum_result_by_regions):
       should display the rate of 'Choice A' over all expressed ballots.
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
-    regions_geo = gpd.read_file('data/regions.geojson')
+    gdf = gpd.read_file('data/regions.geojson')
+    gdf = gdf.rename(columns={"code": "code_reg"})
+    gdf = gdf.merge(referendum_result_by_regions, how='inner', on='code_reg')
+    gdf['ratio'] = gdf['Choice A'] / (gdf['Choice A'] + gdf['Choice B'])
+    gdf.plot(column='ratio', legend=True, legend_kwds={'label': "Choice A ratio"})
 
-    # Calculer le ratio des votes pour Choice A sur les votes exprimés
-    referendum_result_by_regions = referendum_result_by_regions.copy()
-    referendum_result_by_regions['ratio'] = (
-        referendum_result_by_regions['Choice A'] /
-        (referendum_result_by_regions['Choice A'] + referendum_result_by_regions['Choice B'])
-    )
-
-    # Fusionner les données géographiques avec les résultats
-    merged = regions_geo.merge(
-        referendum_result_by_regions,
-        left_on='code',  # Colonne dans le fichier GeoJSON
-        right_index=True  # `code_reg` est l'index de referendum_result_by_regions
-    )
-
-    # Tracer la carte avec la méthode GeoDataFrame.plot
-    merged.plot(
-        column='ratio',  # Colonne utilisée pour colorer la carte
-        cmap='coolwarm',  # Palette de couleurs
-        legend=True,      # Ajouter une légende
-        figsize=(10, 8)   # Taille de la figure
-    )
-    return gpd.GeoDataFrame(merged)
+    return gdf
 
 
 if __name__ == "__main__":
