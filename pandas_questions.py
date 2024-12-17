@@ -43,17 +43,19 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
 
-    referendum = referendum.rename(columns={'Department code': 'code_dep', 'Department name': 'name_dep'})
-    merged_df1 = pd.merge(referendum, regions_and_departments, on='code_dep')
-    dom_tom_com_list = [
-        'ZA', 'ZB', 'ZC', 'ZD',
-        'ZM', 'ZN', 'ZP', 'ZS',
-        'ZW', 'ZX', 'ZZ'
-    ]
-    merged_df1 = merged_df1.drop(merged_df1[merged_df1['code_dep'].isin(dom_tom_com_list)].index)
-    merged_df1 = merged_df1.drop(merged_df1[merged_df1['name_dep_x'].str.contains('ETRANGER')].index)
-
-    return merged_df1
+    return (
+        referendum
+        .assign(
+            code_dep=lambda x: x["Department code"].apply(
+                lambda x: f"0{x}" if len(x) == 1 else x
+            )
+        )
+        .query("`Department code` not in ['ZA', 'ZB', 'ZC', 'ZD', 'ZM', 'ZN', 'ZP', 'ZS', 'ZW', 'ZX', 'ZZ']")
+        .merge(regions_and_departments,
+               left_on="code_dep",
+               right_on="code_dep",
+               how="left")
+    )
 
 def compute_referendum_result_by_regions(referendum_and_areas):
     """Return a table with the absolute count for each region.
