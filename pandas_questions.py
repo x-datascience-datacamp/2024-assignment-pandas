@@ -46,15 +46,18 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     """
 
     ref = referendum.rename(columns={"Department code": "code_dep"})
-    ref['code_dep'] = ref['code_dep'].apply(lambda x: f"{int(x):02d}" if str(x).isdigit() and 1 <= int(x) <= 9 else x)
+    ref['code_dep'] = ref['code_dep'].apply(
+        lambda x: f"{int(x):02d}" if str(x).isdigit()
+        and 1 <= int(x) <= 9 else x)
 
-    df = pd.DataFrame(regions_and_departments.merge(ref, how='inner', on='code_dep'))
+    df = pd.DataFrame(regions_and_departments.merge(
+        ref, how='inner', on='code_dep'))
 
     dep_list = ['Guadeloupe', 'Martinique', 'Guyane', 'La Réunion',
                 'Mayotte', 'Saint-Pierre-et-Miquelon', 'Saint-Barthélemy',
                 'Saint-Martin', 'Terres australes et antarctiques françaises',
-                'Wallis et Futuna', 'Polynésie française', 'Nouvelle-Calédonie',
-                'Île de Clipperton']
+                'Wallis et Futuna', 'Polynésie française',
+                'Nouvelle-Calédonie', 'Île de Clipperton']
 
     df = df.drop(df[df["name_dep"].isin(dep_list)].index)
     df['Department code'] = df['code_dep']
@@ -67,7 +70,8 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    results = referendum_and_areas.groupby(['code_reg', 'name_reg'], as_index=False)[
+    results = referendum_and_areas.groupby(
+        ['code_reg', 'name_reg'], as_index=False)[
         ['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']].sum()
     results = results.set_index('code_reg')
     return results
@@ -86,7 +90,8 @@ def plot_referendum_map(referendum_result_by_regions):
     gdf = gdf.rename(columns={"code": "code_reg"})
     gdf = gdf.merge(referendum_result_by_regions, how='inner', on='code_reg')
     gdf['ratio'] = gdf['Choice A'] / (gdf['Choice A'] + gdf['Choice B'])
-    gdf.plot(column='ratio', legend=True, legend_kwds={'label': "Choice A ratio"})
+    gdf.plot(column='ratio', legend=True,
+             legend_kwds={'label': "Choice A ratio"})
 
     return gdf
 
