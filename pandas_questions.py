@@ -1,5 +1,7 @@
+
 """
-This module provides functions to load and analyze referendum data,
+This module provides functions to load and analyze referendum data.
+
 merge with regional information, and produce a geographic visualization.
 """
 
