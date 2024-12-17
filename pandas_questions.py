@@ -51,7 +51,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     referendum = referendum[referendum["Department name"]
                             != "FRANCAIS DE L'ETRANGER"]
     referendum.loc[:, "code_dep"] = referendum["code_dep"].str.zfill(2)
-    
+
     merged = pd.merge(
         referendum,
         regions_and_departments,
