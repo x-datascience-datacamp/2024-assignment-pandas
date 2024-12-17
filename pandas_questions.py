@@ -44,7 +44,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
     ref = referendum.rename(columns={"Department code": "code_dep"})
     ref['code_dep'] = ref['code_dep'].apply(
         lambda x: f"{int(x):02d}" if str(x).isdigit()
