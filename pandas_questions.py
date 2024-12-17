@@ -97,19 +97,15 @@ def plot_referendum_map(referendum_result_by_regions):
 if __name__ == "__main__":
 
     referendum, df_reg, df_dep = load_data()
-    print("Data loaded successfully.")
     regions_and_departments = merge_regions_and_departments(
         df_reg, df_dep
     )
-    print("Regions and departments merged successfully.")
     referendum_and_areas = merge_referendum_and_areas(
         referendum, regions_and_departments
     )
-    print("Referendum and areas merged successfully.")
     referendum_results = compute_referendum_result_by_regions(
         referendum_and_areas
     )
-    print("Referendum results computed successfully.")
     print(referendum_results)
 
     plot_referendum_map(referendum_results)
