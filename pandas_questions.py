@@ -54,7 +54,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     """
     referendum['Department code'] = referendum['Department code'].str.zfill(2)
 
-    # Merge referendum data with regions_and_departments on matching department codes
     merged = pd.merge(
         left=referendum,
         right=regions_and_departments,
@@ -72,18 +71,19 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    required_columns = ['code_reg',
-                        'name_reg',
-                        'Registered',
-                        'Choice A',
-                        'Choice B', 
-                        'Null', 
-                        'Abstentions']
+    required_columns = [
+        'code_reg',
+        'name_reg',
+        'Registered',
+        'Choice A',
+        'Choice B',
+        'Null',
+        'Abstentions'
+    ]
 
-    # Filter the DataFrame
+
     data = referendum_and_areas[required_columns]
 
-    # Groupby 'code_reg' and agg
     grouped = data.groupby('code_reg', as_index=False).agg({
         'name_reg': 'first',
         'Registered': 'sum',
@@ -95,12 +95,14 @@ def compute_referendum_result_by_regions(referendum_and_areas):
 
     grouped.set_index('code_reg', inplace=True)
 
-    final_columns = ['name_reg',
-                     'Registered',
-                     'Abstentions',
-                     'Null',
-                     'Choice A',
-                     'Choice B']
+    final_columns = [
+        'name_reg',
+        'Registered',
+        'Abstentions',
+        'Null',
+        'Choice A',
+        'Choice B'
+    ]
     
     grouped = grouped[final_columns]
 
