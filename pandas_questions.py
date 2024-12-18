@@ -125,7 +125,7 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     # Load geographic data for regions
-    geoPath = "E:/M1/datacamps/2024-assignment-pandas/data/regions.geojson"
+    geoPath = "data/regions.geojson"
     geo_data = gpd.read_file(geoPath)
 
     # Compute the ratio of 'Choice A' over total expressed votes
