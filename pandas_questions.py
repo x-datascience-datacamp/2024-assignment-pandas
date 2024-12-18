@@ -91,10 +91,9 @@ def plot_referendum_map(referendum_result_by_regions):
     )
 
     # Compute the ratio: Choice A / (Choice A + Choice B)
-    gdf_merged['ratio'] = (
-        gdf_merged['Choice A'] /
-        (gdf_merged['Choice A'] + gdf_merged['Choice B'])
-    )
+    choice_a = gdf_merged['Choice A']
+    choice_b = gdf_merged['Choice B']
+    gdf_merged['ratio'] = choice_a / (choice_a + choice_b)
 
     # Create a figure and axis for a nicer plot
     fig, ax = plt.subplots(1, 1, figsize=(10, 8))
