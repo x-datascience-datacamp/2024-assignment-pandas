@@ -31,13 +31,16 @@ def merge_regions_and_departments(regions, departments):
     """
 
     merged_df = departments.merge(
-        regions, left_on="region_code", right_on="code", suffixes=("_dep", "_reg")
+        regions,
+        left_on="region_code",
+        right_on="code",
+        suffixes=("_dep", "_reg")
     )
     return merged_df[["code_reg", "name_reg", "code_dep", "name_dep"]]
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
-    """Merge referendum and regions_and_departments in one DataFrame.
+    """Merge refOerendum and regions_and_departments in one DataFrame.
 
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
@@ -77,13 +80,22 @@ def plot_referendum_map(referendum_result_by_regions):
     """
 
     geo_regions = gpd.read_file("data/regions.geojson")
-    referendum_result_by_regions["ratio"] = referendum_result_by_regions["Choice A"] / (
-        referendum_result_by_regions["Choice A"]
+    referendum_result_by_regions[
+        "ratio"
+        ] = referendum_result_by_regions[
+            "Choice A"
+            ] / (
+                referendum_result_by_regions[
+                    "Choice A"
+                    ]
         + referendum_result_by_regions["Choice B"]
     )
 
     geo_merged = geo_regions.merge(
-        referendum_result_by_regions, left_on="code", right_on="code_reg", how="inner"
+        referendum_result_by_regions,
+        left_on="code",
+        right_on="code_reg",
+        how="inner"
     )
 
     geo_merged.plot(column="ratio", cmap="Blues", legend=True)
@@ -98,7 +110,9 @@ if __name__ == "__main__":
     referendum_and_areas = merge_referendum_and_areas(
         referendum, regions_and_departments
     )
-    referendum_results = compute_referendum_result_by_regions(referendum_and_areas)
+    referendum_results = compute_referendum_result_by_regions(
+        referendum_and_areas
+        )
     print(referendum_results)
 
     plot_referendum_map(referendum_results)
