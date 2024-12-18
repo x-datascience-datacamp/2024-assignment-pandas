@@ -80,7 +80,7 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     # Chargement des données géographiques.
-    geo_data = gpd.read_file("regions.geojson")
+    geo_data = gpd.read_file("data/regions.geojson")
 
     # Calcul du ratio.
     referendum_result_by_regions["ratio"] = (
