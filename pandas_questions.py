@@ -19,7 +19,7 @@ def load_data():
     Load data from the CSV files referundum/regions/departments.
     """
     referendum = pd.read_csv("data/referendum.csv", on_bad_lines="skip",
-                              delimiter=";")
+                             delimiter=";")
 
     regions = pd.read_csv("data/regions.csv")
     departments = pd.read_csv("data/departments.csv")
@@ -112,7 +112,7 @@ def plot_referendum_map(referendum_result_by_regions):
     geo_regions = gpd.read_file("data/regions.geojson")
 
     merged_df = geo_regions.merge(
-        referendum_result_by_regions, left_on="code", 
+        referendum_result_by_regions, left_on="code",
         right_index=True, how="left"
     )
 
@@ -121,7 +121,7 @@ def plot_referendum_map(referendum_result_by_regions):
     )
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-    merged_df.plot(column="ratio", cmap="Greens", 
+    merged_df.plot(column="ratio", cmap="Greens",
                    legend=True, ax=ax, edgecolor="black")
     plt.title("Rate of 'Choice A' over all expressed ballots")
     plt.axis("off")
@@ -137,7 +137,8 @@ if __name__ == "__main__":
     referendum_and_areas = merge_referendum_and_areas(
         referendum, regions_and_departments
     )
-    referendum_results = compute_referendum_result_by_regions(referendum_and_areas)
+    referendum_results = compute_referendum_result_by_regions(
+        referendum_and_areas)
     print(referendum_results)
 
     plot_referendum_map(referendum_results)
