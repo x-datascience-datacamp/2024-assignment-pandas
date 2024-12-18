@@ -18,7 +18,8 @@ def load_data():
     """
     Load data from the CSV files referundum/regions/departments.
     """
-    referendum = pd.read_csv("data/referendum.csv", on_bad_lines="skip", delimiter=";")
+    referendum = pd.read_csv("data/referendum.csv", on_bad_lines="skip",
+                              delimiter=";")
 
     regions = pd.read_csv("data/regions.csv")
     departments = pd.read_csv("data/departments.csv")
@@ -51,7 +52,6 @@ def merge_regions_and_departments(regions, departments):
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """
     Merge referendum and regions_and_departments in one DataFrame.
-    
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
@@ -112,7 +112,8 @@ def plot_referendum_map(referendum_result_by_regions):
     geo_regions = gpd.read_file("data/regions.geojson")
 
     merged_df = geo_regions.merge(
-        referendum_result_by_regions, left_on="code", right_index=True, how="left"
+        referendum_result_by_regions, left_on="code", 
+        right_index=True, how="left"
     )
 
     merged_df["ratio"] = merged_df["Choice A"] / (
@@ -120,7 +121,8 @@ def plot_referendum_map(referendum_result_by_regions):
     )
 
     fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-    merged_df.plot(column="ratio", cmap="Greens", legend=True, ax=ax, edgecolor="black")
+    merged_df.plot(column="ratio", cmap="Greens", 
+                   legend=True, ax=ax, edgecolor="black")
     plt.title("Rate of 'Choice A' over all expressed ballots")
     plt.axis("off")
     plt.show()
