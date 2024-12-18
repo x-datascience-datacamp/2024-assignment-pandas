@@ -28,18 +28,46 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
+        # Renommer les colonnes pour clarification avant fusion
+    regions = regions.rename(columns={"code": "code_reg", "name": "name_reg"})
+    departments = departments.rename(columns={"code": "code_dep", "name": "name_dep", "region_code": "code_reg"})
 
-    return pd.DataFrame({})
+    # Fusion des DataFrames sur le code de région
+    merged = pd.merge(departments, regions, on="code_reg", how="inner")
+
+    # Sélection des colonnes dans l'ordre souhaité
+    merged = merged[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
+
+    return merged
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
-    """Merge referendum and regions_and_departments in one DataFrame.
-
-    You can drop the lines relative to DOM-TOM-COM departments, and the
-    french living abroad.
     """
+    Merge referendum and regions_and_departments in one DataFrame.
 
-    return pd.DataFrame({})
+    Args:
+        referendum (pd.DataFrame): The referendum data.
+        regions_and_departments (pd.DataFrame): The merged regions and departments data.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing referendum data merged with region and department data,
+                      excluding lines related to DOM-TOM-COM and French living abroad.
+    """
+    # Exclure les départements DOM-TOM-COM et les Français de l'étranger
+    # DOM-TOM-COM : codes départements qui commencent par 97 ou 98.
+    # Français vivant à l'étranger : code département 99.
+    areas_to_exclude = ['97', '98', '99']
+    filtered_areas = regions_and_departments[
+        ~regions_and_departments['code_dep'].str.startswith(tuple(areas_to_exclude))
+    ]
+
+    # Renommer la colonne dans referendum pour alignement avant la fusion
+    referendum = referendum.rename(columns={"DepartmentCode": "code_dep"})
+
+    # Fusion des DataFrames sur la colonne 'code_dep'
+    merged = pd.merge(referendum, filtered_areas, on="code_dep", how="inner")
+
+    return merged
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -48,8 +76,16 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
+    # Grouper par région (code_reg) et sommer les colonnes pertinentes
+    grouped = referendum_and_areas.groupby(['code_reg', 'name_reg']).sum()
 
-    return pd.DataFrame({})
+    # Garder uniquement les colonnes pertinentes
+    result = grouped[['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']].reset_index()
+
+    # Réindexer par code_reg
+    result = result.set_index('code_reg')
+
+    return result
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -61,8 +97,32 @@ def plot_referendum_map(referendum_result_by_regions):
       should display the rate of 'Choice A' over all expressed ballots.
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
+    # Charger les données géographiques
+    regions_geo = gpd.read_file("regions.geojson")
 
-    return gpd.GeoDataFrame({})
+    # Calculer le ratio 'Choice A' / votes exprimés
+    referendum_result_by_regions["ratio"] = (
+        referendum_result_by_regions["Choice A"] / 
+        (referendum_result_by_regions["Choice A"] + referendum_result_by_regions["Choice B"])
+    )
+
+    # Fusionner les données géographiques avec les résultats du référendum
+    regions_geo = regions_geo.rename(columns={"code": "code_reg"})
+    regions_geo["code_reg"] = regions_geo["code_reg"].astype(int)  # Harmoniser les types de données
+    merged_geo = regions_geo.merge(referendum_result_by_regions, on="code_reg", how="left")
+
+    # Tracer la carte
+    ax = merged_geo.plot(
+        column="ratio",  # Colonne utilisée pour la coloration
+        cmap="Blues",    # Palette de couleurs
+        legend=True,     # Afficher la légende
+        legend_kwds={"label": "Ratio of Choice A"},  # Libellé de la légende
+        figsize=(10, 8)  # Taille de la figure
+    )
+    plt.title("Referendum Results by Region")
+    plt.show()
+
+    return merged_geo
 
 
 if __name__ == "__main__":
