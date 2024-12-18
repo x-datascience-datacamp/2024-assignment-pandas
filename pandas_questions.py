@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 
 def load_data():
+    
     """Load data from the CSV files referundum/regions/departments."""
 
     referendum = pd.read_csv('data/referendum.csv', on_bad_lines="skip",
@@ -26,6 +27,7 @@ def load_data():
 
 
 def merge_regions_and_departments(regions, departments):
+    
     """Merge regions and departments in one DataFrame.
 
     The columns in the final DataFrame should be:
@@ -42,6 +44,7 @@ def merge_regions_and_departments(regions, departments):
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
+    
     """Merge referendum and regions_and_departments in one DataFrame.
 
     You can drop the lines relative to DOM-TOM-COM departments, and the
@@ -59,6 +62,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
+    
     """Return a table with the absolute count for each region.
 
     The return DataFrame should be indexed by `code_reg` and have columns:
@@ -86,9 +90,9 @@ def compute_referendum_result_by_regions(referendum_and_areas):
 
 
 def plot_referendum_map(referendum_result_by_regions):
+    
     """
     Plot a map with the results from the referendum.
-
     * Load the geographic data with geopandas from `regions.geojson`.
     * Merge these info into `referendum_result_by_regions`.
     * Use the method `GeoDataFrame.plot` to display the result map. The results
