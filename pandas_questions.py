@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
+
     referendum = pd.read_csv('data/referendum.csv', sep=';')
     regions = pd.read_csv('data/regions.csv', sep=',')
     departments = pd.read_csv('data/departments.csv', sep=',')
@@ -27,12 +28,13 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
+
     regions = regions.copy()
     departments = departments.copy()
     regions['code'] = regions['code'].astype(str)
     departments['region_code'] = departments['region_code'].astype(str)
     departments['code'] = departments['code'].astype(str).str.zfill(2)
-    merged_df = pd.merge(
+    merhed_df = pd.merge(
         regions,
         departments,
         left_on='code',
@@ -40,10 +42,10 @@ def merge_regions_and_departments(regions, departments):
         how='inner'
     )
     result = pd.DataFrame({
-        'code_reg': merged_df['code_x'],
-        'name_reg': merged_df['name_x'],
-        'code_dep': merged_df['code_y'],
-        'name_dep': merged_df['name_y']
+        'code_reg': merhed_df['code_x'],
+        'name_reg': merhed_df['name_x'],
+        'code_dep': merhed_df['code_y'],
+        'name_dep': merhed_df['name_y']
     })
     return result
 
@@ -54,13 +56,14 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
+
     referendum = referendum.copy()
     regions_and_departments = regions_and_departments.copy()
     referendum['Department code'] = \
         referendum['Department code'].astype(str).str.zfill(2)
     regions_and_departments['code_dep'] = \
         regions_and_departments['code_dep'].astype(str)
-    merged_df = pd.merge(
+    merhed_df = pd.merge(
         referendum,
         regions_and_departments,
         left_on='Department code',
@@ -72,14 +75,14 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         # Corsica
         {'2A', '2B'}
     )
-    merged_df = merged_df[merged_df['Department code'].isin(mainland_codes)]
-    merged_df = merged_df.dropna()
+    merhed_df = merhed_df[merhed_df['Department code'].isin(mainland_codes)]
+    merhed_df = merhed_df.dropna()
     required_columns = [
         'Department code', 'Department name', 'Town code', 'Town name',
         'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B',
         'code_dep', 'code_reg', 'name_reg', 'name_dep'
     ]
-    return merged_df[required_columns]
+    return merhed_df[required_columns]
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -88,6 +91,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
+    
     all_regions = \
         referendum_and_areas[['code_reg', 'name_reg']].drop_duplicates()
     results = referendum_and_areas.groupby(
