@@ -95,23 +95,35 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
 
-    df_info = gpd.read_file('./data/regions.geojson')
+    regions_geo = gpd.read_file('./data/regions.geojson')
 
-    # Merge referendum results geopandas infos
-    df_plot = df_info.merge(
-        referendum_result_by_regions,
-        how='left',
-        left_on='code',
-        right_on='code_reg'
-    )
-
-    # Ration of Choice A compared to all ballots
-    df_plot['ratio'] = df_plot['Choice A'] / (df_plot['Choice A']+ df_plot['Choice B'])
-
-    # Plot
-    df_plot.plot(column='ratio', legend=True, cmap='viridis')
-    plt.title('Referendum Results: Choice A Ratio by Region')
-    return df_plot
+    regions_geo = regions_geo.rename(columns={'code': 'code_reg'})
+    merged_db = (
+        regions_geo.merge(
+            referendum_result_by_regions,
+            on='code_reg',
+            how='inner'))
+    merged_db['ratio'] = (
+        merged_db['Choice A'] /
+        (
+            merged_db['Choice A'] +
+            merged_db['Choice B']
+        )
+            )
+    ax = (
+        merged_db.plot(
+            column='ratio',
+            legend=True,
+            figsize=(10, 10),
+            cmap='coolwarm',
+            legend_kwds={
+                'label': "Ratio of 'Choice A'",
+                'orientation': "horizontal"
+                }
+                )
+        )
+    ax.set_title("Referendum Results, Region (Choice A Ratio)", fontsize=15)
+    return merged_db
 
 if __name__ == "__main__":
 
