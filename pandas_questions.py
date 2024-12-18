@@ -78,6 +78,8 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     referendum_and_areas = referendum_and_areas.set_index('code_reg')
 
     return referendum_and_areas
+
+
 def plot_referendum_map(referendum_result_by_regions):
     """Plot a map with the results from the referendum.
 
