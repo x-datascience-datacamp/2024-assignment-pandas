@@ -30,11 +30,13 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
     regions = regions.rename(columns={'code': 'code_reg', 'name': 'name_reg'})
-    departments = departments.rename(columns={'region_code': 'code_reg', 'code': 'code_dep', 'name': 'name_dep'})
+    departments = departments.rename(columns={
+        'region_code': 'code_reg', 'code': 'code_dep', 'name': 'name_dep'})
     merged_df = pd.merge(regions, departments, on='code_reg')
-    merged_df=merged_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
+    merged_df = merged_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
 
     return merged_df
+
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
@@ -42,7 +44,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
     return (
         referendum
         .assign(
@@ -50,12 +51,16 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
                 lambda x: f"0{x}" if len(x) == 1 else x
             )
         )
-        .query("`Department code` not in ['ZA', 'ZB', 'ZC', 'ZD', 'ZM', 'ZN', 'ZP', 'ZS', 'ZW', 'ZX', 'ZZ']")
+        .query(
+            "`Department code` not in ['ZA', 'ZB', 'ZC', 'ZD', 'ZM', 'ZN', "
+            "'ZP', 'ZS', 'ZW', 'ZX', 'ZZ']"
+        )
         .merge(regions_and_departments,
                left_on="code_dep",
                right_on="code_dep",
                how="left")
     )
+
 
 def compute_referendum_result_by_regions(referendum_and_areas):
     """Return a table with the absolute count for each region.
@@ -63,12 +68,16 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    df = referendum_and_areas.groupby(['code_reg','name_reg'], as_index=True).sum()[
-        ['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
+    df = (
+        referendum_and_areas
+        .groupby(['code_reg', 'name_reg'], as_index=True)
+        .sum()[['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
+    )
     df.reset_index(inplace=True)
     df.set_index('code_reg', inplace=True)
 
     return df
+
 
 def plot_referendum_map(referendum_result_by_regions):
     """Plot a map with the results from the referendum.
@@ -110,4 +119,3 @@ if __name__ == "__main__":
 
     plot_referendum_map(referendum_results)
     plt.show()
-###
