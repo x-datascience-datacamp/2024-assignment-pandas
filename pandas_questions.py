@@ -11,11 +11,15 @@ aggregate them by regions and finally plot them on a map using `geopandas`.
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import os
 
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
-    referendum = pd.read_csv(r"data\referendum.csv", sep=";")
+    referendum_path = os.path.join("data", "referendum.csv")
+    referendum = pd.read_csv(referendum_path, sep=";")
+
+    # referendum = pd.read_csv(r"data\referendum.csv", sep=";")
     regions = pd.read_csv(r"data\regions.csv")
     departments = pd.read_csv(r"data\departments.csv")
 
@@ -51,10 +55,22 @@ def merge_regions_and_departments(regions, departments):
 
 
 def safe_convert(value):
+    """
+    Safely convert a value to an integer.
+
+    If the value cannot be converted to an integer (e.g., due to a ValueError),
+    it returns `None` instead.
+
+    Parameters:
+        value: The input value to be converted.
+
+    Returns:
+        int or None
+    """
     try:
-        return int(value)  # 尝试转换为整数
+        return int(value)
     except ValueError:
-        return value  # 如果失败，返回原始值
+        return value
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
