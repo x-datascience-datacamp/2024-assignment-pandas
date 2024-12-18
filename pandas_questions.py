@@ -80,10 +80,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         'Null',
         'Abstentions'
     ]
-
-
     data = referendum_and_areas[required_columns]
-
     grouped = data.groupby('code_reg', as_index=False).agg({
         'name_reg': 'first',
         'Registered': 'sum',
@@ -92,9 +89,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         'Null': 'sum',
         'Abstentions': 'sum'
     })
-
     grouped.set_index('code_reg', inplace=True)
-
     final_columns = [
         'name_reg',
         'Registered',
@@ -103,9 +98,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         'Choice A',
         'Choice B'
     ]
-    
     grouped = grouped[final_columns]
-
     return grouped
 
 
