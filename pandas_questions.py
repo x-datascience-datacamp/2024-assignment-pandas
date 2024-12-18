@@ -53,7 +53,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
     # Drop lines relative to DOM-TOM-COM and french living abroad
     df1 = referendum[~referendum["Department name"].str.contains(
         "FRANCAIS DE L\'ETRANGER", na=False)]
