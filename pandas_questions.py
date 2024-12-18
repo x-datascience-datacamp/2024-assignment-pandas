@@ -4,10 +4,11 @@ Plotting referendum results in pandas.
 In short, we want to make a beautiful map to report results of a referendum. In
 some way, we would like to depict results with something similar to the maps
 that you can find here:
-https://github.com/x-datascience-datacamp/datacamp-assignment-pandas/blob/main/example_map.png
+<https://github.com/x-datascience-datacamp/datacamp-assignment-pandas/
+blob/main/example_map.png>
 
-To do that, you will load the data as pandas.DataFrame, merge the info and
-aggregate them by regions and finally plot them on a map using `geopandas`.
+To do that, you will load the data as pandas.DataFrame, merge the info, and
+aggregate them by regions. Finally, plot them on a map using `geopandas`.
 """
 
 import pandas as pd
@@ -93,7 +94,8 @@ def plot_referendum_map(referendum_result_by_regions):
     # Compute the ratio: Choice A / (Choice A + Choice B)
     choice_a = gdf_merged['Choice A']
     choice_b = gdf_merged['Choice B']
-    gdf_merged['ratio'] = choice_a / (choice_a + choice_b)
+    total_votes = choice_a + choice_b
+    gdf_merged['ratio'] = choice_a / total_votes
 
     # Create a figure and axis for a nicer plot
     fig, ax = plt.subplots(1, 1, figsize=(10, 8))
