@@ -21,6 +21,7 @@ def load_data():
 
     return referendum, regions, departments
 
+
 def merge_regions_and_departments(regions, departments):
     """Merge regions and departments in one DataFrame.
 
@@ -36,6 +37,7 @@ def merge_regions_and_departments(regions, departments):
     )
     return merged[["code_reg", "name_reg", "code_dep", "name_dep"]]
 
+
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
 
@@ -43,14 +45,22 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
     # Suppression des DOM-TOM-COM et des étrangers.
-    filtered = referendum[~referendum["Department code"].str.startswith("97")]
+    referendum = referendum[~referendum["Department code"].str.startswith("97")]
+
+    # Correction des types pour assurer une correspondance correcte
+    referendum["Department code"] = referendum["Department code"].astype(str)
+    regions_and_departments["code_dep"] = regions_and_departments["code_dep"].astype(str)
+
+    # Fusion des données
     merged = pd.merge(
-        filtered,
+        referendum,
         regions_and_departments,
         left_on="Department code",
         right_on="code_dep",
+        how="inner",
     )
     return merged
+
 
 def compute_referendum_result_by_regions(referendum_and_areas):
     """Return a table with the absolute count for each region.
@@ -58,17 +68,18 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    grouped = referendum_and_areas.groupby(["code_reg", "name_reg"]).sum()
-    grouped = grouped.rename(
-        columns={
-            "Registered": "Registered",
-            "Abstentions": "Abstentions",
-            "Null": "Null",
-            "Choice A": "Choice A",
-            "Choice B": "Choice B",
-        }
-    )
-    return grouped.reset_index().set_index("code_reg")
+    # Sélection des colonnes nécessaires
+    columns_to_keep = [
+        "code_reg", "name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"
+    ]
+    referendum_and_areas = referendum_and_areas[columns_to_keep]
+
+    # Agrégation des données par région
+    grouped = referendum_and_areas.groupby(["code_reg", "name_reg"], as_index=False).sum()
+
+    # Réindexation sur `code_reg`
+    return grouped.set_index("code_reg")
+
 
 def plot_referendum_map(referendum_result_by_regions):
     """Plot a map with the results from the referendum.
@@ -118,3 +129,4 @@ if __name__ == "__main__":
 
     plot_referendum_map(referendum_results)
     plt.show()
+
