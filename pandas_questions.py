@@ -20,8 +20,8 @@ def load_data():
     referendum = pd.read_csv(referendum_path, sep=";")
 
     # referendum = pd.read_csv(r"data\referendum.csv", sep=";")
-    regions = pd.read_csv(r"data\regions.csv")
-    departments = pd.read_csv(r"data\departments.csv")
+    regions = pd.read_csv("data/regions.csv")
+    departments = pd.read_csv("data/departments.csv")
 
     return referendum, regions, departments
 
