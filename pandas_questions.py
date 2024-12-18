@@ -62,12 +62,18 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
     # Filter out DOM-TOM-COM and French living abroad
-    mainland_codes = [f"{i:02}" for i in range(1, 96)]  # Generate codes from '01' to '95'
-    referendum = referendum[referendum['Department code'].astype(str).isin(mainland_codes)].copy()
+    # Generate codes from '01' to '95'
+    mainland_codes = [f"{i:02}" for i in range(1, 96)]
+    referendum = referendum[
+        referendum['Department code'].astype(str).isin(mainland_codes)
+        ].copy()
 
     # Ensure data types match for merging
-    referendum.loc[:, 'Department code'] = referendum['Department code'].astype(str)
-    regions_and_departments.loc[:, 'code_dep'] = regions_and_departments['code_dep'].astype(str)
+    referendum.loc[:, 'Department code'] = referendum[
+        'Department code'
+        ].astype(str)
+    regions_and_departments.loc[:, 'code_dep'] = regions_and_departments[
+        'code_dep'].astype(str)
 
     # Perform the merge
     merged_df = pd.merge(
@@ -90,7 +96,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     """
     # Group by 'code_reg' and compute the sum of numeric columns
     grouped = referendum_and_areas.groupby('code_reg').agg({
-        'name_reg': 'first',  # Keep the first name of the region (all names are identical within a region)
+        'name_reg': 'first',
         'Registered': 'sum',
         'Abstentions': 'sum',
         'Null': 'sum',
@@ -115,12 +121,17 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     # Load geographic data for regions
-    geo_data = gpd.read_file("E:/M1/datacamps/2024-assignment-pandas/data/regions.geojson")
+    geoPath = "E:/M1/datacamps/2024-assignment-pandas/data/regions.geojson"
+    geo_data = gpd.read_file(geoPath)
 
-    # Compute the ratio of 'Choice A' over total expressed votes (Choice A + Choice B)
+    # Compute the ratio of 'Choice A' over total expressed votes
+    # (Choice A + Choice B)
     referendum_result_by_regions['ratio'] = (
         referendum_result_by_regions['Choice A'] /
-        (referendum_result_by_regions['Choice A'] + referendum_result_by_regions['Choice B'])
+        (
+            referendum_result_by_regions['Choice A'] +
+            referendum_result_by_regions['Choice B']
+            )
     )
 
     # Merge the geographic data with the referendum results
