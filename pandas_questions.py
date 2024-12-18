@@ -59,7 +59,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         referendum,
         regions_and_departments,
         left_on="Department code",
-        righon="code_dep",
+        right_on="code_dep",
         how="inner",
     )
     return merged
@@ -98,83 +98,7 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     # Chargement des données géographiques.
-    geo_data = gpd.read_file("regions.geojson")
-
-    # Calcul du ratio.
-    referendum_result_by_regions["ratio"] = (
-        referendum_result_by_regions["Choice A"] /
-        (
-            referendum_result_by_regions["Choice A"] +
-            referendum_result_by_regions["Choice B"]
-        )
-    )
-
-    # Fusion des données géographiques avec les résultats.
-    merged = geo_data.merge(
-        referendum_result_by_regions,
-        left_on="code",
-        right_on="code_reg",
-    )
-
-    # Affichage de la carte.
-    merged.plot(column="ratio", legend=True, cmap="coolwarm")
-    return merged
-
-if __name__ == "__main__":
-
-    referendum, df_reg, df_dep = load_data()
-    regions_and_departments = merge_regions_and_departments(
-        df_reg, df_dep
-    )
-    referendum_and_areas = merge_referendum_and_areas(
-        referendum, regions_and_departments
-    )
-    referendum_results = compute_referendum_result_by_regions(
-        referendum_and_areas
-    )
-    print(referendum_results)
-
-    plot_referendum_map(referendum_results)
-    plt.show()t_on="code_dep",
-        how="inner",
-    )
-    return merged
-
-def compute_referendum_result_by_regions(referendum_and_areas):
-    """Return a table with the absolute count for each region.
-
-    The return DataFrame should be indexed by `code_reg` and have columns:
-    ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
-    """
-    # Sélection des colonnes nécessaires
-    columns_to_keep = [
-        "code_reg", "name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"
-    ]
-    referendum_and_areas = referendum_and_areas[columns_to_keep]
-
-    # Agrégation des données par région
-    grouped = referendum_and_areas.groupby(["code_reg", "name_reg"], as_index=False).sum()
-
-    # Vérification des données agrégées
-    total_registered = grouped["Registered"].sum()
-    expected_total = 43262592
-    if total_registered != expected_total:
-        print(f"Warning: Total Registered mismatch. Found {total_registered}, expected {expected_total}.")
-
-    # Réindexation sur `code_reg`
-    return grouped.set_index("code_reg")
-
-def plot_referendum_map(referendum_result_by_regions):
-    """Plot a map with the results from the referendum.
-
-    * Load the geographic data with geopandas from `regions.geojson`.
-    * Merge these info into `referendum_result_by_regions`.
-    * Use the method `GeoDataFrame.plot` to display the result map. The results
-      should display the rate of 'Choice A' over all expressed ballots.
-    * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
-    """
-    # Chargement des données géographiques.
-    geo_data = gpd.read_file("regions.geojson")
+    geo_data = gpd.read_file("data/regions.geojson")
 
     # Calcul du ratio.
     referendum_result_by_regions["ratio"] = (
