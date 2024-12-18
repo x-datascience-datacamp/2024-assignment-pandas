@@ -55,7 +55,10 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
                 lambda x: f"0{x}" if len(x) == 1 else x
             )
         )
-        .query("`Department code` not in ['ZA', 'ZB', 'ZC', 'ZD', 'ZM', 'ZN', 'ZP', 'ZS', 'ZW', 'ZX', 'ZZ']")
+        .query("`Department code` not in ['ZA', 'ZB', 'ZC']")
+        .query("`Department code` not in ['ZD', 'ZM', 'ZN']")
+        .query("`Department code` not in ['ZP', 'ZS', 'ZW']")
+        .query("`Department code` not in ['ZX', 'ZZ']")
         .merge(regions_and_departments,
                left_on="code_dep",
                right_on="code_dep",
@@ -69,12 +72,12 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-
+    outputs_columns = ["Registered", "Abstentions",
+                       "Null", "Choice A", "Choice B"]
     return (
         referendum_and_areas
         .set_index("code_reg")
-        .groupby("name_reg")[
-            ["Registered", "Abstentions", "Null", "Choice A", "Choice B"]].sum()
+        .groupby("name_reg")[outputs_columns].sum()
         .reset_index()
     )
 
@@ -89,10 +92,13 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     geo_df = gpd.read_file("data/regions.geojson")
+    def ratio_func(x): return x["Choice A"] / (x["Choice A"] + x["Choice B"])
     geo_referendum = (geo_df
                       .merge(
-                          referendum_result_by_regions, left_on="nom", right_on="name_reg")
-                      .assign(ratio=lambda x: x["Choice A"] / (x["Choice A"] + x["Choice B"]))
+                          referendum_result_by_regions,
+                          left_on="nom",
+                          right_on="name_reg")
+                      .assign(ratio=lambda df: ratio_func(df))
                       )
 
     geo_referendum.plot(column="ratio", legend=True)
