@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
-    root = "E:/M1/datacamps/2024-assignment-pandas/data/"
+    root = "data/"
     referendumPath = root + "referendum.csv"
     regionsPath = root + "regions.csv"
     departmentsPath = root + "departments.csv"
