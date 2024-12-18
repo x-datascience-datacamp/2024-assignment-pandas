@@ -30,14 +30,16 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
 
-    regions = regions.rename(columns={"code": "code_reg", "name": "name_reg"})
-    departments = departments.rename(
-        columns={"region_code": "code_reg", "code": "code_dep", "name": "name_dep"}
+    combined = pd.merge(
+        regions,
+        departments,
+        how="inner",
+        left_on="code",
+        right_on="region_code",
+        suffixes=["_reg", "_dep"]
     )
-    
-
-    merged = departments.merge(regions, on="code_reg", how="left")
-    return merged[["code_reg", "name_reg", "code_dep", "name_dep"]]
+    combined = combined[["code_reg", "name_reg", "code_dep", "name_dep"]]
+    return combined
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
@@ -47,26 +49,17 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
 
-    referendum_dropped = referendum.copy()
-
-    referendum_dropped['Department code'] = referendum_dropped['Department code'].astype(str)
-
-    referendum_dropped = referendum_dropped[
-        referendum_dropped['Department code'].str.match(r'^\d([A-Z0-9])?$')]
-
-    referendum_dropped['code_dep'] = referendum_dropped['Department code'].str.zfill(2)
-
-    regions_and_departments_dropped = regions_and_departments[
-        regions_and_departments['code_dep'].str.match(r'^\d[A-Z0-9]$')]
-
-    merged = pd.merge(
-        referendum_dropped,
-        regions_and_departments_dropped,
-        on='code_dep',
-        how='left'
+    referendum["Department code"] = (
+        referendum["Department code"].astype(str).str.zfill(2)
     )
-
-    return merged
+    combined_ref = pd.merge(
+        referendum,
+        regions_and_departments,
+        how="inner",
+        left_on="Department code",
+        right_on="code_dep"
+    )
+    return combined_ref
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -76,13 +69,19 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
 
-    grouped = referendum_and_areas.groupby(["code_reg", "name_reg"], as_index=False).sum()
-    
-
-    result = grouped[
-        ["code_reg", "name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"]
+    referendum_and_areas = referendum_and_areas[
+        ["code_reg", "name_reg", "Registered", "Abstentions",
+         "Null", "Choice A", "Choice B"]
     ]
-    return result.set_index("code_reg")
+    results_by_reg = referendum_and_areas.groupby("code_reg").agg({
+        "name_reg": "first",
+        "Registered": "sum",
+        "Abstentions": "sum",
+        "Null": "sum",
+        "Choice A": "sum",
+        "Choice B": "sum"
+    })
+    return results_by_reg
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -95,35 +94,21 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
 
-    regions_geo = gpd.read_file('./data/regions.geojson')
-
-    regions_geo = regions_geo.rename(columns={'code': 'code_reg'})
-    merged_db = (
-        regions_geo.merge(
-            referendum_result_by_regions,
-            on='code_reg',
-            how='inner'))
-    merged_db['ratio'] = (
-        merged_db['Choice A'] /
-        (
-            merged_db['Choice A'] +
-            merged_db['Choice B']
-        )
-            )
-    ax = (
-        merged_db.plot(
-            column='ratio',
-            legend=True,
-            figsize=(10, 10),
-            cmap='coolwarm',
-            legend_kwds={
-                'label': "Ratio of 'Choice A'",
-                'orientation': "horizontal"
-                }
-                )
-        )
-    ax.set_title("Referendum Results, Region (Choice A Ratio)", fontsize=15)
-    return merged_db
+    geo = gpd.read_file("data/regions.geojson")
+    referendum_result_by_regions["ratio"] = (
+        referendum_result_by_regions["Choice A"]
+        / (referendum_result_by_regions["Choice A"]
+           + referendum_result_by_regions["Choice B"])
+    )
+    geo_data = pd.merge(
+        geo,
+        referendum_result_by_regions,
+        how="inner",
+        left_on="code",
+        right_on="code_reg"
+    )
+    geo_data.plot(column="ratio", legend=True)
+    return geo_data
 
 if __name__ == "__main__":
 
