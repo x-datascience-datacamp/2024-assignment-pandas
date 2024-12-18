@@ -18,11 +18,10 @@ def load_data():
     """Load data from the CSV files referundum/regions/departments."""
     referendum_path = os.path.join("data", "referendum.csv")
     referendum = pd.read_csv(referendum_path, sep=";")
-
-    # referendum = pd.read_csv(r"data\referendum.csv", sep=";")
-    regions = pd.read_csv("data/regions.csv")
-    departments = pd.read_csv("data/departments.csv")
-
+    regions_path = os.path.join("data", "regions.csv")
+    regions = pd.read_csv(regions_path)
+    departments_path = os.path.join("data", "departments.csv")
+    departments = pd.read_csv(departments_path)
     return referendum, regions, departments
 
 
