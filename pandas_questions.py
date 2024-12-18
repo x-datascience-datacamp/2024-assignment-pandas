@@ -64,10 +64,14 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
     # transform code column type to int
-    regions_and_departments['code_dep'] = regions_and_departments['code_dep'].apply(safe_convert)
+    code_dep_column = regions_and_departments['code_dep']
+    regions_and_departments['code_dep'] = code_dep_column.apply(safe_convert)
     # drop the lines relative to DOM-TOM-COM departments
     referendum = referendum[:36565]
-    referendum.loc[:, 'Department code'] = referendum['Department code'].apply(safe_convert)
+    referendum.loc[:, 'Department code'] = (
+        referendum['Department code']
+        .apply(safe_convert)
+    )
 
     # #rename column names
     # rename_referendum = referendum.rename(columns = {
@@ -89,10 +93,21 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    referendum_and_areas_selected = referendum_and_areas[['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
-    referendum_and_areas_selected.head(50)
+    columns = [
+        'name_reg',
+        'Registered',
+        'Abstentions',
+        'Null',
+        'Choice A',
+        'Choice B',
+    ]
+    referendum_and_areas_selected = referendum_and_areas[columns]
     # grouped by name_reg and summation
-    referendum_and_areas_selected = referendum_and_areas_selected.groupby('name_reg', as_index=False).sum()
+    referendum_and_areas_selected = (
+        referendum_and_areas_selected
+        .groupby('name_reg', as_index=False)
+        .sum()
+    )
     return referendum_and_areas_selected
 
 
