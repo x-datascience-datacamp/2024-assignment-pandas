@@ -102,5 +102,5 @@ if __name__ == "__main__":
         referendum_and_areas
     )
     print(referendum_results)
-    print(plot_referendum_map(referendum_results))
+    plot_referendum_map(referendum_results)
     plt.show()
