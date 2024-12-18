@@ -3,3 +3,5 @@ pandas
 pytest
 geopandas
 descartes
+flake8
+pytest
