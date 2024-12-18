@@ -15,11 +15,11 @@ import matplotlib.pyplot as plt
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
-    ref=pd.read_csv('../2024-assignment-pandas/data/referendum.csv', sep=';')
-    reg=pd.read_csv('../2024-assignment-pandas/data/regions.csv', sep=',')
-    d=pd.read_csv('../2024-assignment-pandas/data/departments.csv', sep=',')
+    rf = pd.read_csv('../2024-assignment-pandas/data/referendum.csv', sep=';')
+    rg = pd.read_csv('../2024-assignment-pandas/data/regions.csv', sep=',')
+    d = pd.read_csv('../2024-assignment-pandas/data/departments.csv', sep=',')
 
-    return ref, reg, d
+    return rf, rg, d
 
 
 def merge_regions_and_departments(regions, departments):
@@ -28,7 +28,12 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    regions.rename(columns={'code':'code_reg', 'name':'name_reg'}, inplace=True)
+    regions.rename(
+        columns={
+            'code': 'code_reg',
+            'name': 'name_reg'},
+        inplace=True
+    )
     departments.rename(
         columns={
             'region_code': 'code_reg',
