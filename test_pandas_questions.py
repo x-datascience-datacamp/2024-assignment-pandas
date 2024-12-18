@@ -111,6 +111,9 @@ def test_plot_referendum_map():
         "The return object should be a GeoDataFrame, not a "
         f"{type(gdf_referendum)}."
     )
+
+    gdf_referendum = plot_referendum_map(referendum_result_by_regions)
     assert 'ratio' in gdf_referendum.columns
     gdf_referendum = gdf_referendum.set_index('name_reg')
+    print(gdf_referendum)
     assert np.isclose(gdf_referendum['ratio'].loc['Normandie'], 0.427467)
