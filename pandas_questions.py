@@ -66,7 +66,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     '''
     mainland_codes = [f"{i:02}" for i in range(1, 96)]
     referendum = referendum[
-        (referendum['Department code'].astype(str).str.zfill(2)).isin(mainland_codes)
+        (referendum['Department code'].astype(str)).isin(mainland_codes)
         ].copy()
 
     # Ensure data types match for merging
@@ -76,7 +76,9 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     regions_and_departments.loc[:, 'code_dep'] = regions_and_departments[
         'code_dep'].astype(str).str.zfill(2)
     '''
-    referendum['Department code'] = referendum['Department code'].astype(str).str.zfill(2)
+    referendum['Department code'] = referendum[
+        'Department code'
+        ].astype(str).str.zfill(2)
     # Perform the merge
     merged_df = pd.merge(
         referendum,
@@ -175,35 +177,3 @@ if __name__ == "__main__":
 
     plot_referendum_map(referendum_results)
     plt.show()
-
-'''
-referendum, regions, departments = load_data()
-print("referendum columns: ", referendum.columns)
-print("regions columns: ", regions.columns)
-print("departments columns: ", departments.columns)
-
-print("refrendum head: ", referendum.head())
-print("region head: ", regions.head())
-print("departement head: ", departments.head())
-
-regions_and_departments = merge_regions_and_departments(
-        regions, departments
-)
-
-print(regions_and_departments.columns)
-print(regions_and_departments.head())
-print(regions_and_departments.shape)
-
-referendum_and_areas = merge_referendum_and_areas(
-        referendum, regions_and_departments
-)
-print("second merge\n\n")
-print(referendum_and_areas.columns)
-print(referendum_and_areas.head())
-print(referendum_and_areas.shape)
-
-mainland_codes = [f"{i:02}" for i in range(1, 96)]
-print(mainland_codes)
-
-print(referendum['Department code'].astype(str).str.zfill(2))
-'''
