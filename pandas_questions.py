@@ -10,7 +10,6 @@ To do that, you will load the data as pandas.DataFrame, merge the info and
 aggregate them by regions and finally plot them on a map using `geopandas`.
 """
 
-
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -77,7 +76,7 @@ def plot_referendum_map(referendum_result_by_regions):
     * Load the geographic data with geopandas from `regions.geojson`.
     * Merge these info into `referendum_result_by_regions`.
     * Display the result map where the color represents the rate of 'Choice A' over
-    * all expressed ballots (Choice A + Choice B).
+      all expressed ballots (Choice A + Choice B).
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     # Load the geojson file of regions
