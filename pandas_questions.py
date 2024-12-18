@@ -47,7 +47,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
     regions_and_departments['code_dep'] = regions_and_departments[
         'code_dep'].str.lstrip('0')
     referendum_and_areas = referendum.merge(
@@ -87,7 +86,8 @@ def compute_referendum_result_by_regions(referendum_and_areas):
 
 
 def plot_referendum_map(referendum_result_by_regions):
-    """Plot a map with the results from the referendum.
+    """
+    Plot a map with the results from the referendum.
 
     * Load the geographic data with geopandas from `regions.geojson`.
     * Merge these info into `referendum_result_by_regions`.
