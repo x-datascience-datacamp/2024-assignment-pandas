@@ -15,15 +15,14 @@ import matplotlib.pyplot as plt
 
 
 def load_data():
-    
-    
+    """
+    Load dataset.
 
-    referendum = pd.read_csv('data/referendum.csv',sep=";")
+    Output
+    """
+    referendum = pd.read_csv('data/referendum.csv', sep=";")
     regions = pd.read_csv('data/regions.csv')
     departments = pd.read_csv('data/departments.csv')
-
-
-
     return referendum, regions, departments
 
 
@@ -33,53 +32,46 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-
-
     regions = regions.rename(columns={
-        'code':'code_reg',
-        'name':'name_reg'
+        'code': 'code_reg',
+        'name': 'name_reg'
     })
     departments = departments.rename(columns={
-        'region_code':'code_reg',
-        'name':'name_dep',
-        'code':'code_dep'
+        'region_code': 'code_reg',
+        'name': 'name_dep',
+        'code': 'code_dep'
     })
-
-
-    regions_and_departments = pd.merge(regions, departments, on='code_reg',how='left')
+    regions_and_departments = pd.merge(
+        regions, departments, on='code_reg', how='left'
+    )
     regions_and_departments = regions_and_departments[[
-        'code_reg','name_reg','code_dep','name_dep']]
-    
-
-
-
+        'code_reg', 'name_reg', 'code_dep', 'name_dep']]
     return regions_and_departments
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
-    
+
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
-    
     referendum['code_dep'] = referendum['Department code']
     referendum['name_dep'] = referendum['Department name']
-    regions_and_departments["code_dep"] = (regions_and_departments["code_dep"].str.lstrip('0'))    
-    referendum = referendum[referendum['code_dep'].str[0] !='Z']
-    
-    referendum_and_areas = pd.merge(referendum,regions_and_departments, on='code_dep',how='inner')
+    regions_and_departments["code_dep"] = (
+        regions_and_departments["code_dep"].str.lstrip('0')
+        )
+    referendum = referendum[referendum['code_dep'].str[0] != 'Z']
+    referendum_and_areas = pd.merge(
+        referendum, regions_and_departments, on='code_dep', how='inner'
+        )
     referendum_and_areas = referendum_and_areas.rename(columns={
-        'name_dep_x':'name_dep'
+        'name_dep_x': 'name_dep'
     })
-    
-
-    referendum_and_areas = referendum_and_areas[['Department code', 'Department name', 'Town code', 'Town name',
-        'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B',
-        'code_dep', 'code_reg', 'name_reg', 'name_dep']]
-    print(referendum_and_areas.shape)
-   
+    referendum_and_areas = referendum_and_areas[[
+        'Department code', 'Department name', 'Town code',
+        'Town name', 'Registered', 'Abstentions', 'Null',
+        'Choice A', 'Choice B', 'code_dep', 'code_reg', 'name_reg', 'name_dep'
+        ]]
     return referendum_and_areas
 
 
@@ -89,14 +81,15 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    referendum_and_areas = referendum_and_areas[['code_reg','name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
-
-
-    referendum_results = referendum_and_areas.groupby(['code_reg','name_reg']).sum()
-    
+    referendum_and_areas = referendum_and_areas[[
+        'code_reg', 'name_reg', 'Registered', 'Abstentions',
+        'Null', 'Choice A', 'Choice B'
+        ]]
+    referendum_results = referendum_and_areas.groupby([
+        'code_reg', 'name_reg'
+        ]).sum()
     referendum_results = referendum_results.reset_index()
     referendum_results = referendum_results.set_index('code_reg')
-
     return referendum_results
 
 
@@ -121,9 +114,7 @@ def plot_referendum_map(referendum_result_by_regions):
 
 
 if __name__ == "__main__":
-
     referendum, df_reg, df_dep = load_data()
-
     regions_and_departments = merge_regions_and_departments(
         df_reg, df_dep
     )
@@ -133,7 +124,5 @@ if __name__ == "__main__":
     referendum_results = compute_referendum_result_by_regions(
         referendum_and_areas
     )
-
-
     plot_referendum_map(referendum_results)
     plt.show()
