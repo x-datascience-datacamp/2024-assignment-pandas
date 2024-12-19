@@ -86,7 +86,6 @@ def plot_referendum_map(referendum_result_by_regions):
         )
     )
 
-
     # Merge geographic data with referendum results
     merged_data = regions_geo.merge(referendum_result_by_regions,
                                     left_on="code", right_on="code_reg")
