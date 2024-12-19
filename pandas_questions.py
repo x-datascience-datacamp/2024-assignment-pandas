@@ -28,9 +28,8 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    df_merged = pd.merge(regions, departments, right_on='region_code', 
-        left_on='code', suffixes=('_reg', '_dep')
-    )
+    df_merged = pd.merge(regions, departments, right_on='region_code',
+                         left_on='code', suffixes=('_reg', '_dep'))
 
     return df_merged[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
 
@@ -42,9 +41,9 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
     referendum['Department code'] = referendum['Department code'].str.zfill(2)
-    merge_referendum_and_areas = pd.merge(referendum, regions_and_departments, 
-        left_on='Department code', right_on='code_dep'
-    )
+    merge_referendum_and_areas = pd.merge(referendum, regions_and_departments,
+                                          left_on='Department code',
+                                          right_on='code_dep')
     return merge_referendum_and_areas
 
 
@@ -80,17 +79,16 @@ def plot_referendum_map(referendum_result_by_regions):
 
     # Calculate the ratio of 'Choice A' over all expressed ballots
     referendum_result_by_regions['ratio'] = (
-        referendum_result_by_regions['Choice A'] / (
-        referendum_result_by_regions['Choice A'] +
-        referendum_result_by_regions['Choice B'])
+        referendum_result_by_regions['Choice A'] /
+        (referendum_result_by_regions['Choice A'] + referendum_result_by_regions['Choice B'])
     )
 
     # Merge geographic data with referendum results
-    merged_data = regions_geo.merge(referendum_result_by_regions, 
+    merged_data = regions_geo.merge(referendum_result_by_regions,
                                     left_on="code", right_on="code_reg")
 
     # Plot the map with the ratio of 'Choice A'
-    merged_data.plot(column='ratio', cmap='coolwarm', legend=True, 
+    merged_data.plot(column='ratio', cmap='coolwarm', legend=True,
                      legend_kwds={'label': "Ratio of Choice A"})
     plt.title("Referendum Results by Region")
     plt.show()
