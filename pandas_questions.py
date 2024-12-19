@@ -28,12 +28,9 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    regions = regions.rename(columns={"code" : "code_reg", "name" : "name_reg"})
-    regions = regions[["code_reg","name_reg"]]
-    departments = departments.rename(columns={"region_code" : "code_reg", "code" : "code_dep", "name" : "name_dep"})
-    departments = departments[["code_reg", "code_dep", "name_dep"]]
-    reg_and_dep = pd.merge(departments, regions, how = "inner", on = "code_reg")
-    return reg_and_dep
+    merged_df = pd.merge(regions, departments, how='inner', left_on='code',
+                         right_on='region_code', suffixes=('_reg', '_dep'))
+    return merged_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
@@ -54,16 +51,14 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    result_by_regions = referendum_and_areas[['code_reg', 
-                                              'name_reg', 
-                                              'Registered', 
-                                              'Abstentions',
-                                              'Null', 
-                                              'Choice A', 
-                                              'Choice B']]
-    result_by_regions = result_by_regions.groupby(by=['code_reg', 'name_reg']).sum()
-    result_by_regions.reset_index('name_reg', inplace = True)
-    return result_by_regions
+    return referendum_and_areas.groupby('code_reg').agg({
+        'name_reg': 'first',
+        'Registered': 'sum',
+        'Abstentions': 'sum',
+        'Null': 'sum',
+        'Choice A': 'sum',
+        'Choice B': 'sum'
+    })
 
 
 def plot_referendum_map(referendum_result_by_regions):
