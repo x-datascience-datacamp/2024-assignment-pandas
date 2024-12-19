@@ -80,8 +80,12 @@ def plot_referendum_map(referendum_result_by_regions):
     # Calculate the ratio of 'Choice A' over all expressed ballots
     referendum_result_by_regions['ratio'] = (
         referendum_result_by_regions['Choice A'] /
-        (referendum_result_by_regions['Choice A'] + referendum_result_by_regions['Choice B'])
+        (
+            referendum_result_by_regions['Choice A'] +
+            referendum_result_by_regions['Choice B']
+        )
     )
+
 
     # Merge geographic data with referendum results
     merged_data = regions_geo.merge(referendum_result_by_regions,
