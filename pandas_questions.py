@@ -29,28 +29,43 @@ def merge_regions_and_departments(regions, departments):
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
 
-    merge_df = pd.merge(regions[['code', 'name']],
-                        departments[['region_code', 'name']],
+    merge_df = pd.merge(regions,
+                        departments,
                         left_on='code',
                         right_on='region_code',
                         how='left',
                         suffixes=('_reg', '_dep'))
 
-    return merge_df.rename(columns={'code': 'code_reg',
-                                    'region_code': 'code_dep'})
+    return merge_df[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
 
 
-def merge_referendum_and_areas(referendum, regions_and_departments):
+def merge_referendum_and_areas(referendum_, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
 
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
 
-    return pd.merge(regions_and_departments,
-                    referendum, left_on='code_dep',
-                    right_on='Department code',
-                    how='left').dropna(axis=0, how='any')
+    dep_list = ["FRANCAIS DE L'ETRANGER", 'SAINT-MARTIN/SAINT-BARTHELEMY',
+                'WALLIS-ET-FUTUNA', 'SAINT PIERRE ET MIQUELON',
+                'POLYNESIE FRANCAISE', 'NOUVELLE CALEDONIE',
+                'MAYOTTE', 'LA REUNION', 'GUYANE', 'MARTINIQUE',
+                'GUADELOUPE']
+
+    referendum_['Department name'] = referendum_['Department name'
+                                                 ].astype(str).str.zfill(2)
+
+    merged_df = pd.merge(referendum_,
+                         regions_and_departments,
+                         left_on='Department code',
+                         right_on='code_dep',
+                         how='inner')
+
+    merged_df = merged_df[~merged_df['Department name'].isin(dep_list)]
+
+    merged_df = merged_df.dropna()
+
+    return merged_df
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -83,7 +98,7 @@ def plot_referendum_map(referendum_result_by_regions):
                       left_on="code",
                       right_on="code_reg")
     all_expressed = merged["Choice A"] + merged["Choice B"]
-    merged['ratio'] = (merged['Choice A'] / all_expressed)*100
+    merged['ratio'] = (merged['Choice A'] / all_expressed)
     merged = gpd.GeoDataFrame(merged)
     fig, ax = plt.subplots(1, 1, figsize=(10, 8))
     merged.plot(column="ratio",
