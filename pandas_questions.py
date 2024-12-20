@@ -45,6 +45,15 @@ def merge_regions_and_departments(regions, departments):
 
 
 def lets_add_a_0(df, column):
+    """
+    Add a column with a constant value of 0 to the given DataFrame.
+
+    Args:
+        dataframe (pd.DataFrame): The input DataFrame.
+
+    Returns:
+        pd.DataFrame: A new DataFrame with an added column 'zero_column'.
+    """
     for i in range(len(df)):
         if len(str(df.loc[i, column])) == 1:
             df.loc[i, column] = "0" + str(df.loc[i, column])
@@ -52,6 +61,15 @@ def lets_add_a_0(df, column):
 
 
 def get_rid_of_str(df, columns, str_todelete):
+    """
+    Remove string elements from a pandas Series.
+
+    Args:
+        series (pd.Series): The input Series.
+
+    Returns:
+        pd.Series: The Series without string elements.
+    """
     return df[~df[columns].str.contains(str_todelete, na=False)]
 
 
@@ -66,6 +84,15 @@ depart_metropol.append(str("2B"))
 
 
 def Metropol_first(df, column):
+    """
+    Return the first character of the given city name.
+
+    Args:
+        city_name (str): The name of the city.
+
+    Returns:
+        str: The first character of the city name.
+    """
     return df[df[column].isin(depart_metropol)]
 
 
