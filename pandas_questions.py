@@ -21,17 +21,18 @@ def load_data():
     return referendum, regions, departments
 
 
-def merge_regions_and_departments(regions, departments):
+def merge_regions_and_departments(region, departments):
     """Merge regions and departments in one DataFrame.
 
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    regions = regions.rename(columns={"code": "code_reg", "name": "name_reg"})
+
+    region = region.rename(columns={"code": "code_reg", "name": "name_reg"})
     departments = departments.rename(columns={
         "code": "code_dep",
         "name": "name_dep"})
-    merged_df = pd.merge(departments, regions, left_on="region_code",
+    merged_df = pd.merge(departments, region, left_on="region_code",
                          right_on="code_reg", how="inner")
     final_df = merged_df[["code_reg", "name_reg", "code_dep", "name_dep"]]
     return final_df
