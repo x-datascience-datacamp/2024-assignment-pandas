@@ -83,7 +83,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     result = grouped.set_index('code_reg')[
         [
             'name_reg',
-             'Registered',
+            'Registered',
             'Abstentions',
             'Null',
             'Choice A',
