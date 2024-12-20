@@ -41,14 +41,15 @@ def merge_regions_and_departments(regions, departments):
         'name_dep': 'name_dep'
     })
     merged = merged[
-    [
-        'code_reg',
-        'name_reg',
-        'code_dep',
-        'name_dep',
-    ]
+        [
+            'code_reg',
+            'name_reg',
+            'code_dep',
+            'name_dep',
+        ]
     ]
     return merged
+
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
@@ -80,12 +81,13 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         ['code_reg', 'name_reg']
     ).sum().reset_index()
     result = grouped.set_index('code_reg')[
-    [ 'name_reg',
-        'Registered',
-        'Abstentions',
-        'Null',
-        'Choice A',
-        'Choice B',
+        [
+            'name_reg',
+             'Registered',
+            'Abstentions',
+            'Null',
+            'Choice A',
+            'Choice B',
         ]
     ]
     return pd.DataFrame(result)
