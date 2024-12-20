@@ -30,15 +30,14 @@ def merge_regions_and_departments(regions, departments):
         'name': 'name_reg'
     })
 
-    departments_renamed = departments[['region_code', 
-    'code', 'name']].rename(columns={
+    dep_renam= departments[['region_code','code', 'name']].rename(columns={
         'region_code': 'code_reg',
         'code': 'code_dep',
         'name': 'name_dep'
     })
 
     return pd.merge(
-        departments_renamed, regions_renamed, on="code_reg", how="left"
+        dep_renam, regions_renamed, on="code_reg", how="left"
     )
 
 
@@ -49,7 +48,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     """
     r_d = referendum.copy()
 
-    r_d['Department code'] =r_d['Department code'].astype(str)
+    r_d['Department code'] = r_d['Department code'].astype(str)
     r_d = r_d[
         r_d['Department code'].str.match(r'^\d([A-Z0-9])?$')
     ]
@@ -66,15 +65,17 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     return merged
 
 
-def compute_referendum_result_by_regions(referendum_and_areas):
+def compute_referendum_result_by_regions(r_and_a):
     """Return a table with the absolute count for each region.
 
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    grouped = referendum_and_areas.groupby(["code_reg", "name_reg"]).sum().reset_index()
+    grouped = r_and_a.groupby(["code_reg", "name_reg"]).sum().reset_index()
     grouped = grouped.set_index("code_reg")
-    grouped = grouped[["name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"]]
+    grouped = grouped[
+        ["name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"]
+        ]
     return grouped
 
 
@@ -113,10 +114,10 @@ def plot_referendum_map(referendum_result_by_regions):
 
 if __name__ == "__main__":
     referendum, df_reg, df_dep = load_data()
-    regions_and_departments = merge_regions_and_departments(df_reg, df_dep)
-    referendum_and_areas = merge_referendum_and_areas(referendum, regions_and_departments)
-    referendum_results = compute_referendum_result_by_regions(referendum_and_areas)
+    r_and_de = merge_regions_and_departments(df_reg, df_dep)
+    r_and_ar = merge_referendum_and_areas(referendum, r_and_de)
+    r_r = compute_referendum_result_by_regions(r_and_ar)
 
-    print(referendum_results)
+    print(r_r)
 
-    plot_referendum_map(referendum_results)
+    plot_referendum_map(r_r)
