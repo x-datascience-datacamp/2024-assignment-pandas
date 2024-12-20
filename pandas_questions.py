@@ -48,6 +48,7 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     French living abroad.
     """
+    regions_and_departments['code_dep'] = regions_and_departments['code_dep'].apply(lambda x: str(x).lstrip('0'))
     indices_to_drop = referendum[
         referendum['Department code'].str.startswith('Z')
     ].index
