@@ -11,7 +11,7 @@ aggregate them by regions and finally plot them on a map using `geopandas`.
 
 import pandas as pd
 import geopandas as gpd
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 
 def load_data():
