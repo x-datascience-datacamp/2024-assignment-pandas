@@ -11,6 +11,8 @@ aggregate them by regions and finally plot them on a map using `geopandas`.
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
+
+
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
     referendum = pd.read_csv('data/referendum.csv', sep=';')
@@ -18,6 +20,8 @@ def load_data():
     departments = pd.read_csv('data/departments.csv')
 
     return referendum, regions, departments
+
+
 def merge_regions_and_departments(regions, departments):
     """Merge regions and departments in one DataFrame.
 
@@ -37,8 +41,11 @@ def merge_regions_and_departments(regions, departments):
         'name_dep': 'name_dep'
     })
     return merged[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
+
+
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
+
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
@@ -67,6 +74,8 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         how="inner"
     )
     return merged_df
+
+
 def compute_referendum_result_by_regions(referendum_and_areas):
     """Return a table with the absolute count for each region.
 
@@ -80,6 +89,8 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     ]
     return pd.DataFrame(result)
+
+
 def plot_referendum_map(referendum_result_by_regions):
     """Plot a map with the results from the referendum.
 
@@ -100,16 +111,20 @@ def plot_referendum_map(referendum_result_by_regions):
     )
     merged.plot(column='ratio', legend=True, cmap='coolwarm')
     return gpd.GeoDataFrame(merged)
+
+
 if __name__ == "__main__":
 
     referendum, df_reg, df_dep = load_data()
     regions_and_departments = merge_regions_and_departments(
-        df_reg, df_dep)
+        df_reg, df_dep
+    )
     referendum_and_areas = merge_referendum_and_areas(
-        referendum, regions_and_departments)
+        referendum, regions_and_departments
+    )
     referendum_results = compute_referendum_result_by_regions(
-        referendum_and_areas)
+        referendum_and_areas
+    )
     print(referendum_results)
     plot_referendum_map(referendum_results)
     plt.show()
-
