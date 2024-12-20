@@ -41,7 +41,12 @@ def merge_regions_and_departments(regions, departments):
         departments (DataFrame): Departments data.
 
     Returns:
-        DataFrame: Merged DataFrame with columns ['code_reg', 'name_reg', 'code_dep', 'name_dep'].
+        DataFrame: Merged DataFrame with columns [
+            'code_reg',
+            'name_reg',
+            'code_dep',
+            'name_dep'
+        ].
     """
     regions = regions.rename(
         columns={'code': 'code_reg', 'name': 'name_reg'}
@@ -69,7 +74,8 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         regions_and_departments (DataFrame): Merged regions and departments data.
 
     Returns:
-        DataFrame: Merged DataFrame containing referendum data aligned with regions and departments.
+        DataFrame: Merged DataFrame containing referendum data aligned with
+            regions and departments.
     """
     referendum['Department code'] = (
         referendum['Department code'].astype(str).str.zfill(2)
@@ -95,8 +101,14 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         referendum_and_areas (DataFrame): Merged referendum and areas data.
 
     Returns:
-        DataFrame: DataFrame indexed by 'code_reg' with columns:
-            ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B'].
+        DataFrame: DataFrame indexed by 'code_reg' with columns [
+            'name_reg',
+            'Registered',
+            'Abstentions',
+            'Null',
+            'Choice A',
+            'Choice B'
+        ].
     """
     grouped = referendum_and_areas.groupby(
         ['code_reg', 'name_reg'],
