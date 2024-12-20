@@ -65,10 +65,25 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     grouped = referendum_and_areas.groupby(
         ['code_reg', 'name_reg'],
         as_index=False
-    )[['Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']].sum()
+    )[
+        [
+            'Registered',
+            'Abstentions',
+            'Null',
+            'Choice A',
+            'Choice B'
+        ]
+    ].sum()
     grouped = grouped.set_index('code_reg')
     grouped = grouped[
-        ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
+        [
+            'name_reg',
+            'Registered',
+            'Abstentions',
+            'Null',
+            'Choice A',
+            'Choice B'
+        ]
     ]
     return grouped
 
@@ -95,8 +110,8 @@ def plot_referendum_map(referendum_result_by_regions):
         legend=True,
         legend_kwds={
             'label': "Ratio of Choice A Votes",
-            'orientation': "horizontal"
-        }
+            'orientation': "horizontal",
+        },
     )
     ax.set_title("Referendum Results by Region", fontsize=16, pad=20)
     ax.set_axis_off()
