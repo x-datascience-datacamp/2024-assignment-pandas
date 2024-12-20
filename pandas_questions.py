@@ -51,17 +51,31 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-    # Filter only numeric department codes to exclude DOM-TOM-COM and French abroad
+    # Ensure columns are strings and clean
+    referendum['Department code'] = referendum['Department code'].astype(str)
+    regions_and_departments['code_dep'] = regions_and_departments['code_dep'].astype(str).str.strip()
+
+    # Filter only numeric department codes
     referendum_filtered = referendum[referendum['Department code'].str.isnumeric()]
 
-    # Ensure all relevant rows are included during the merge
+    # Merge the data
     merged = referendum_filtered.merge(
         regions_and_departments,
         left_on='Department code',
         right_on='code_dep',
-        how='inner'  # Use 'inner' to ensure only valid matches
+        how='left'
     )
+       # Debugging: Print shapes to ensure expected rows are retained
+    print("Referendum filtered shape:", referendum_filtered.shape)
+    print("Regions and departments shape:", regions_and_departments.shape)
+    print("Merged shape:", merged.shape)
+    # Debugging: Check for missing codes again
+    missing_codes = set(referendum_filtered['Department code']) - set(regions_and_departments['code_dep'])
+    print("Missing Department codes after cleaning:", missing_codes)
+
     return merged
+
+
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -70,13 +84,9 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    # Group by region and sum up the values
     grouped = referendum_and_areas.groupby(['code_reg', 'name_reg']).sum().reset_index()
-
-    # Ensure all regions are accounted for
-    return grouped.set_index('code_reg')[['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
-
-
+    result = grouped.set_index('code_reg')[['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
+    return pd.DataFrame(result)
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -89,6 +99,7 @@ def plot_referendum_map(referendum_result_by_regions):
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     geo_regions = gpd.read_file('data/regions.geojson')
+
 
     merged = geo_regions.merge(
         referendum_result_by_regions,
@@ -114,6 +125,5 @@ if __name__ == "__main__":
         referendum_and_areas
     )
     print(referendum_results)
-
     plot_referendum_map(referendum_results)
     plt.show()
