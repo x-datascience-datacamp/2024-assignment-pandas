@@ -27,20 +27,12 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    departments = departments.rename(
-     columns={
+    regions = regions.rename(columns={"code": "code_reg", "name": "name_reg"})
+    departments = departments.rename(columns={
         "code": "code_dep",
-        "name": "name_dep"
-     }
-    )
-    merged_df = pd.merge(
-     departments,
-     regions,
-     left_on="region_code",
-     right_on="code_reg",
-     how="inner"
-     )
-
+        "name": "name_dep"})
+    merged_df = pd.merge(departments, regions, left_on="region_code",
+                         right_on="code_reg", how="inner")
     final_df = merged_df[["code_reg", "name_reg", "code_dep", "name_dep"]]
     return final_df
 
@@ -82,23 +74,12 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
-    grouped_df = referendum_and_areas.groupby(
-     ["code_reg", "name_reg"]
-     ).sum(numeric_only=True)
-
+    grouped_df = referendum_and_areas.groupby(["code_reg", "name_reg"]).sum(
+                     numeric_only=True)
     grouped_df = grouped_df.reset_index()
     result = grouped_df.set_index("code_reg")
-    result = result[
-     [
-        "name_reg",
-        "Registered",
-        "Abstentions",
-        "Null",
-        "Choice A",
-        "Choice B"
-        ]
-    ]
-
+    result = result[["name_reg", "Registered",
+                    "Abstentions", "Null", "Choice A", "Choice B"]]
     return result
 
 
