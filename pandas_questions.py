@@ -40,8 +40,15 @@ def merge_regions_and_departments(regions, departments):
         'code_dep': 'code_dep',
         'name_dep': 'name_dep'
     })
-    return merged[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
-
+    merged = merged[
+    [
+        'code_reg',
+        'name_reg',
+        'code_dep',
+        'name_dep',
+    ]
+    ]
+    return merged
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
@@ -61,7 +68,6 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         regions_and_departments["code_dep"]
         .astype(str).str.zfill(3)
     )
-    # Filter DOM-TOM-COM departments and French living abroad
     referendum_updated = referendum[
         ~referendum["Department code"].isin(codes_to_drop)
     ]
