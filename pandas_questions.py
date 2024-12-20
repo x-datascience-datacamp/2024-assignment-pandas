@@ -37,7 +37,9 @@ def merge_regions_and_departments(regions, departments):
     regions_and_departments = merged_df[
         ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     ]
-    regions_and_departments.columns = ['code_reg', 'name_reg', 'code_dep', 'name_dep']
+    regions_and_departments.columns = [
+        'code_reg', 'name_reg', 'code_dep', 'name_dep'
+        ]
 
     return regions_and_departments
 
@@ -48,7 +50,8 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     French living abroad.
     """
-    regions_and_departments['code_dep'] = regions_and_departments['code_dep'].apply(lambda x: str(x).lstrip('0'))
+    regions_and_departments['code_dep'] = regions_and_departments[
+        'code_dep'].apply(lambda x: str(x).lstrip('0'))
     indices_to_drop = referendum[
         referendum['Department code'].str.startswith('Z')
     ].index
@@ -72,7 +75,14 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     ).sum().reset_index()
 
     return grouped.set_index('code_reg')[
-        ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
+        [
+            'name_reg',
+            'Registered',
+            'Abstentions',
+            'Null',
+            'Choice A',
+            'Choice B'
+        ]
     ]
 
 
@@ -90,8 +100,12 @@ def plot_referendum_map(referendum_result_by_regions):
         regions_geo, referendum_result_by_regions,
         left_on='code', right_on='code_reg'
     )
-    merged['ratio'] = merged['Choice A'] / (merged['Choice A'] + merged['Choice B'])
-    merged.plot(column='ratio', legend=True, cmap='coolwarm')
+    merged['ratio'] = merged['Choice A'] / (
+        merged['Choice A'] + merged['Choice B']
+        )
+    merged.plot(
+        column='ratio', legend=True, cmap='coolwarm'
+    )
 
     return merged
 
