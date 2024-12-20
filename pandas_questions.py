@@ -45,7 +45,7 @@ def merge_regions_and_departments(regions, departments):
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
     """Merge referendum and regions_and_departments in one DataFrame.
-    
+
     You can drop the lines relative to DOM-TOM-COM departments,
     and the French living abroad.
     """
