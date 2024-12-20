@@ -71,7 +71,8 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
 
     Args:
         referendum (DataFrame): Referendum data.
-        regions_and_departments (DataFrame): Merged regions and departments data.
+        regions_and_departments (DataFrame): 
+        Merged regions and departments data.
 
     Returns:
         DataFrame: Merged DataFrame containing referendum data aligned with
@@ -98,7 +99,8 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     Compute the absolute count of referendum results aggregated by region.
 
     Args:
-        referendum_and_areas (DataFrame): Merged referendum and areas data.
+        referendum_and_areas (DataFrame): 
+        Merged referendum and areas data.
 
     Returns:
         DataFrame: DataFrame indexed by 'code_reg' with columns [
@@ -141,10 +143,12 @@ def plot_referendum_map(referendum_result_by_regions):
     Plot a map visualizing the referendum results by region.
 
     Args:
-        referendum_result_by_regions (DataFrame): Referendum results aggregated by region.
+        referendum_result_by_regions (DataFrame): 
+        Referendum results aggregated by region.
 
     Returns:
-        GeoDataFrame: GeoDataFrame with referendum results and calculated ratio.
+        GeoDataFrame: 
+        GeoDataFrame with referendum results and calculated ratio.
     """
     gdf = gpd.read_file('data/regions.geojson')
     gdf_merged = gdf.merge(
