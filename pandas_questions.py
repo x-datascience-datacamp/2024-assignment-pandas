@@ -133,3 +133,4 @@ if __name__ == "__main__":
     print(referendum_results)
     plot_referendum_map(referendum_results)
     plt.show()
+    flake8 --output-file=flake8_report.txt
