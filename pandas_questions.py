@@ -69,8 +69,13 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
         .astype(str).str.zfill(3)
     )
     referendum_updated = referendum[
-        ~referendum["Department code"].isin(codes_to_drop)
-    ]
+        ~referendum[
+            "Department code"
+        ].isin(
+            codes_to_drop
+        )
+        ]
+
     # Merge referendum with regions and departments
     merged_df = pd.merge(
         referendum_updated,
