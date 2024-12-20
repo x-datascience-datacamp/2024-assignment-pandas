@@ -13,11 +13,11 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import os
-os.chdir(
-    (r"C:\Users\Hp\Desktop\IP\M2 DS\Data Camp\Day 1"
-     r"\DataCamp2024-assignment-pandas")
-)
-print(os.getcwd())
+# os.chdir(
+    # (r"C:\Users\Hp\Desktop\IP\M2 DS\Data Camp\Day 1"
+    # r"\DataCamp2024-assignment-pandas")
+# )
+# print(os.getcwd())
 
 
 def load_data():
