@@ -57,9 +57,8 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     french living abroad.
     """
     exclude_codes = ["DOM", "COM", "TOM"]
-    copy_reg_dept = regions_and_departments[~regions_and_departments
-                                            ["code_reg"].
-                                            isin(exclude_codes)].copy()
+    copy_reg_dept = regions_and_departments[~regions_and_departments[
+        "code_reg"].isin(exclude_codes)].copy()
     referendum['Department code'] = referendum['Department code'].astype(str)
     referendum['Department code'] = referendum['Department code'].str.zfill(2)
     copy_reg_dept["code_dep"] = copy_reg_dept["code_dep"].astype(str)
