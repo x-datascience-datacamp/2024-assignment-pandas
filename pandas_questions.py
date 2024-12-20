@@ -38,11 +38,14 @@ def merge_regions_and_departments(regions, departments):
     """
     merged = departments.merge(
         regions,
-        left_on='code_reg',  # Column from departments
-        right_on='code',     # Column from regions
-        how='left'
+        left_on='region_code',  # Column from departments
+        right_on='code',         # Column from regions
+        how='left',
+        suffixes=('_dep', '_reg')  # To differentiate overlapping column names
     )
-    merged = merged.rename(columns={'name': 'name_reg'})
+    # Rename columns for clarity
+    merged = merged.rename(columns={'name_reg': 'name_reg'})
+    # Select the necessary columns
     merged = merged[['code_reg', 'name_reg', 'code_dep', 'name_dep']]
     return merged
 
@@ -89,19 +92,16 @@ def plot_referendum_map(referendum_result_by_regions):
     * Load the geographic data with geopandas from `regions.geojson`.
     * Merge these info into `referendum_result_by_regions`.
     * Display the result map where the color represents the rate of 'Choice A' over
-      all expressed ballots (Choice A + Choice B).
+    *  all expressed ballots (Choice A + Choice B).
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
     # Load the geojson file of regions
     gdf = gpd.read_file('data/regions.geojson')
 
-    # Debugging: Print columns to verify
-    print("GeoDataFrame Columns:", gdf.columns.tolist())
-
     # Merge on region name
     gdf_merged = gdf.merge(
         referendum_result_by_regions,
-        left_on='nom',          # Assuming 'nom' is the region name in GeoDataFrame
+        left_on='nom',
         right_on='name_reg',
         how='left'
     )
