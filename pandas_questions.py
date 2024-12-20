@@ -1,7 +1,7 @@
 """
 Plotting referendum results in pandas.
 
-In short, we want to make beautiful map to report results of a referendum. 
+In short, we want to make beautiful map to report results of a referendum.
 To do that, you will load the data as pandas.DataFrame, merge the info and
 aggregate them by regions and finally plot them on a map using `geopandas`.
 """
@@ -30,7 +30,8 @@ def merge_regions_and_departments(regions, departments):
         'name': 'name_reg'
     })
 
-    departments_renamed = departments[['region_code', 'code', 'name']].rename(columns={
+    departments_renamed = departments[['region_code', 
+    'code', 'name']].rename(columns={
         'region_code': 'code_reg',
         'code': 'code_dep',
         'name': 'name_dep'
@@ -46,20 +47,20 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
 
     Drop lines related to DOM-TOM-COM departments and French living abroad.
     """
-    referendum_dropped = referendum.copy()
+    r_d = referendum.copy()
 
-    referendum_dropped['Department code'] = referendum_dropped['Department code'].astype(str)
-    referendum_dropped = referendum_dropped[
-        referendum_dropped['Department code'].str.match(r'^\d([A-Z0-9])?$')
+    r_d['Department code'] =r_d['Department code'].astype(str)
+    r_d = r_d[
+        r_d['Department code'].str.match(r'^\d([A-Z0-9])?$')
     ]
-    referendum_dropped['code_dep'] = referendum_dropped['Department code'].str.zfill(2)
+    r_d['code_dep'] = r_d['Department code'].str.zfill(2)
 
     regions_and_departments_dropped = regions_and_departments[
         regions_and_departments['code_dep'].str.match(r'^\d[A-Z0-9]$')
     ]
 
     merged = pd.merge(
-        referendum_dropped, regions_and_departments_dropped, on='code_dep', how='left'
+        r_d, regions_and_departments_dropped, on='code_dep', how='left'
     )
 
     return merged
