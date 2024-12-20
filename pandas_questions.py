@@ -1,16 +1,3 @@
-"""
-Plotting referendum results in pandas.
-
-In short, we want to make a beautiful map to report results of a referendum. In
-some way, we would like to depict results with something similar to the maps
-that you can find here:
-<https://github.com/x-datascience-datacamp/datacamp-assignment-pandas/
-blob/main/example_map.png>
-
-To do that, you will load the data as pandas.DataFrame, merge the info, and
-aggregate them by regions. Finally, plot them on a map using `geopandas`.
-"""
-
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -24,9 +11,15 @@ def load_data():
 
 
 def merge_regions_and_departments(regions, departments):
-    regions = regions.rename(columns={'code': 'code_reg', 'name': 'name_reg'})
-    departments = departments.rename(columns={'code': 'code_dep', 'name': 'name_dep'})
-    departments['code_dep'] = departments['code_dep'].astype(str).str.zfill(2)
+    regions = regions.rename(
+        columns={'code': 'code_reg', 'name': 'name_reg'}
+    )
+    departments = departments.rename(
+        columns={'code': 'code_dep', 'name': 'name_dep'}
+    )
+    departments['code_dep'] = departments['code_dep'].astype(
+        str
+    ).str.zfill(2)
     merged = departments.merge(
         regions,
         left_on='region_code',
