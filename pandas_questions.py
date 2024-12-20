@@ -51,29 +51,25 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-    # Ensure columns are strings and clean
-    referendum['Department code'] = referendum['Department code'].astype(str)
-    regions_and_departments['code_dep'] = regions_and_departments['code_dep'].astype(str).str.strip()
-
-    # Filter only numeric department codes
-    referendum_filtered = referendum[referendum['Department code'].str.isnumeric()]
-
-    # Merge the data
-    merged = referendum_filtered.merge(
+    codes_to_drop = ["971", "972", "973", "974", "975", "976", "977",
+                            "978", "986", "987", "988", "989", "984"]
+    referendum["Department code"] = (
+        referendum["Department code"]
+        .astype(str).str.zfill(3))
+    regions_and_departments["code_dep"] = (
+        regions_and_departments["code_dep"]
+        .astype(str).str.zfill(3))
+    # Filter DOM-TOM-COM departments and French living abroad
+    referendum_updated = (
+        referendum[~referendum["Department code"]
+                   .isin(codes_to_drop)])
+    # Merge referendum with regions and departments
+    merged_df = pd.merge(
+        referendum_updated,
         regions_and_departments,
-        left_on='Department code',
-        right_on='code_dep',
-        how='left'
-    )
-       # Debugging: Print shapes to ensure expected rows are retained
-    print("Referendum filtered shape:", referendum_filtered.shape)
-    print("Regions and departments shape:", regions_and_departments.shape)
-    print("Merged shape:", merged.shape)
-    # Debugging: Check for missing codes again
-    missing_codes = set(referendum_filtered['Department code']) - set(regions_and_departments['code_dep'])
-    print("Missing Department codes after cleaning:", missing_codes)
-
-    return merged
+        left_on="Department code",
+        right_on="code_dep", how="inner")
+    return merged_df
 
 
 
