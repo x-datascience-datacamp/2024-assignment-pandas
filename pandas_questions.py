@@ -8,6 +8,7 @@ https://github.com/x-datascience-datacamp/datacamp-assignment-pandas/blob/main/e
 To do that, you will load the data as pandas.DataFrame, merge the info and
 aggregate them by regions and finally plot them on a map using `geopandas`.
 """
+
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -28,8 +29,9 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-    ds = pd.merge(departments, regions, left_on='region_code', right_on='code', suffixes=('_dep', '_reg'))
-    regions_and_departments = ds[['code_reg', 'name_reg', 'code_dep', 'name_dep']].rename(columns={
+
+    merged = pd.merge(departments, regions, left_on='region_code', right_on='code', suffixes=('_dep', '_reg'))
+    regions_and_departments = merged[['code_reg', 'name_reg', 'code_dep', 'name_dep']].rename(columns={
         'code_reg': 'code_reg', 
         'name_reg': 'name_reg',
         'code_dep': 'code_dep',
@@ -48,22 +50,21 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-
-    rrd = pd.merge(referendum, regions_and_departments,
+    referendum_and_areas = pd.merge(referendum, regions_and_departments,
                                     left_on='Department code',
                                     right_on='code_dep')
 
-    return rrd
+    return referendum_and_areas
 
 
-def compute_referendum_result_by_regions(rrd):
+def compute_referendum_result_by_regions(referendum_and_areas):
     """Return a table with the absolute count for each region.
 
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
 
-    referendum_result_by_regions = rrd.groupby(['code_reg', 'name_reg']).agg(
+    referendum_result_by_regions = referendum_and_areas.groupby(['code_reg', 'name_reg']).agg(
         Registered=('Registered', 'sum'),
         Abstentions=('Abstentions', 'sum'),
         Null=('Null', 'sum'),
@@ -73,6 +74,7 @@ def compute_referendum_result_by_regions(rrd):
     
     referendum_result_by_regions = referendum_result_by_regions.rename(columns={'Choice_A': 'Choice A', 'Choice_B': 'Choice B'})
 
+    # Setting 'code_reg' as the index
     referendum_result_by_regions = referendum_result_by_regions.set_index('code_reg')
 
     return referendum_result_by_regions
@@ -98,6 +100,7 @@ def plot_referendum_map(referendum_result_by_regions):
     return geo_data
 
 
+
 if __name__ == "__main__":
 
     referendum, df_reg, df_dep = load_data()
@@ -107,10 +110,10 @@ if __name__ == "__main__":
     referendum_and_areas = merge_referendum_and_areas(
         referendum, regions_and_departments
     )
-    referendum_res = compute_referendum_result_by_regions(
+    referendum_results = compute_referendum_result_by_regions(
         referendum_and_areas
     )
-    print(referendum_res)
+    print(referendum_results)
 
-    plot_referendum_map(referendum_res)
+    plot_referendum_map(referendum_results)
     plt.show()
