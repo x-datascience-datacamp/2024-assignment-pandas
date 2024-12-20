@@ -95,7 +95,7 @@ def compute_referendum_result_by_regions(referendum_and_areas):
         columns={"Choice_A": "Choice A", "Choice_B": "Choice B"}
     )
 
-    # resesting the index 
+    # resesting the index
     referendum_result_by_each_regions = referendum_result_by_each_regions.set_index(
         "code_reg")
 
