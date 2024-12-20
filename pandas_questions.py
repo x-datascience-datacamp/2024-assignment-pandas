@@ -30,7 +30,7 @@ def merge_regions_and_departments(regions, departments):
         'name': 'name_reg'
     })
 
-    dep_renam= departments[['region_code','code', 'name']].rename(columns={
+    dep_renam = departments[['region_code', 'code', 'name']].rename(columns={
         'region_code': 'code_reg',
         'code': 'code_dep',
         'name': 'name_dep'
@@ -74,7 +74,8 @@ def compute_referendum_result_by_regions(r_and_a):
     grouped = r_and_a.groupby(["code_reg", "name_reg"]).sum().reset_index()
     grouped = grouped.set_index("code_reg")
     grouped = grouped[
-        ["name_reg", "Registered", "Abstentions", "Null", "Choice A", "Choice B"]
+        ["name_reg", "Registered", "Abstentions",
+         "Null", "Choice A", "Choice B"]
         ]
     return grouped
 
@@ -106,6 +107,8 @@ def plot_referendum_map(referendum_result_by_regions):
         figsize=(10, 8),
         edgecolor='black'
     )
+    ax.set_title('Carte des valeurs de ratio', fontsize=16)
+
     plt.title("Rate of 'Choice A' over all expressed ballots across regions")
     plt.show()
 
