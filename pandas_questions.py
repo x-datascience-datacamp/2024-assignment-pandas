@@ -51,14 +51,17 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
+    # Filter only numeric department codes to exclude DOM-TOM-COM and French abroad
     referendum_filtered = referendum[referendum['Department code'].str.isnumeric()]
+
+    # Ensure all relevant rows are included during the merge
     merged = referendum_filtered.merge(
         regions_and_departments,
         left_on='Department code',
-        right_on='code_dep'
+        right_on='code_dep',
+        how='inner'  # Use 'inner' to ensure only valid matches
     )
-
-    return pd.DataFrame(merged)
+    return merged
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -67,9 +70,12 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
+    # Group by region and sum up the values
     grouped = referendum_and_areas.groupby(['code_reg', 'name_reg']).sum().reset_index()
-    result = grouped.set_index('code_reg')[['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
-    return pd.DataFrame(result)
+
+    # Ensure all regions are accounted for
+    return grouped.set_index('code_reg')[['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']]
+
 
 
 def plot_referendum_map(referendum_result_by_regions):
