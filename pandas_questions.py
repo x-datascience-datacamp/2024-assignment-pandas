@@ -94,7 +94,6 @@ def compute_referendum_result_by_regions(referendum_and_areas):
 
     referendum_result_by_regions = referendum_result_by_regions.set_index(
         "code_reg")
-    
     return referendum_result_by_regions
 
 
@@ -118,9 +117,7 @@ def plot_referendum_map(referendum_result_by_regions):
         geo_data["Choice A"] + geo_data["Choice B"]
     )
     geo_data.plot(column="ratio", legend=True, cmap="coolwarm")
-    
     return geo_data
-
 
 
 if __name__ == "__main__":
