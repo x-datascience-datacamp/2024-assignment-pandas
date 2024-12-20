@@ -56,34 +56,22 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-    codes_to_drop = [
-        "971", "972", "973", "974", "975", "976", "977",
-        "978", "986", "987", "988", "989", "984"
-    ]
+    codes_to_drop = ["971", "972", "973", "974", "975", "976", "977",
+                            "978", "986", "987", "988", "989", "984"]
     referendum["Department code"] = (
         referendum["Department code"]
-        .astype(str).str.zfill(3)
-    )
+        .astype(str).str.zfill(3))
     regions_and_departments["code_dep"] = (
         regions_and_departments["code_dep"]
-        .astype(str).str.zfill(3)
-    )
-    referendum_updated = referendum[
-        ~referendum[
-            "Department code"
-        ].isin(
-            codes_to_drop
-        )
-        ]
-
-    # Merge referendum with regions and departments
+        .astype(str).str.zfill(3))
+    referendum_updated = (
+        referendum[~referendum["Department code"]
+                   .isin(codes_to_drop)])
     merged_df = pd.merge(
         referendum_updated,
         regions_and_departments,
         left_on="Department code",
-        right_on="code_dep",
-        how="inner"
-    )
+        right_on="code_dep", how="inner")
     return merged_df
 
 
