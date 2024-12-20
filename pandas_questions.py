@@ -124,6 +124,6 @@ if __name__ == "__main__":
     referendum_results = compute_referendum_result_by_regions(
         referendum_and_areas
     )
-    
+
     plot_referendum_map(referendum_results)
     plt.show()
