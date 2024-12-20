@@ -8,17 +8,26 @@ https://github.com/x-datascience-datacamp/datacamp-assignment-pandas/blob/main/e
 To do that, you will load the data as pandas.DataFrame, merge the info and
 aggregate them by regions and finally plot them on a map using `geopandas`.
 """
+
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import os
+os.chdir(
+    (r"C:\Users\Hp\Desktop\IP\M2 DS\Data Camp\Day 1"
+     r"\DataCamp2024-assignment-pandas")
+)
+print(os.getcwd())
 
 
 def load_data():
     """Load data from the CSV files referundum/regions/departments."""
-    referendum = pd.DataFrame({})
-    regions = pd.DataFrame({})
-    departments = pd.DataFrame({})
-
+    referendum = pd.read_csv("data/referendum.csv", delimiter=";")
+    regions = pd.read_csv("data/regions.csv")
+    departments = pd.read_csv("data/departments.csv")
+    referendum.columns
+    regions.columns
+    departments.columns
     return referendum, regions, departments
 
 
@@ -28,8 +37,15 @@ def merge_regions_and_departments(regions, departments):
     The columns in the final DataFrame should be:
     ['code_reg', 'name_reg', 'code_dep', 'name_dep']
     """
-
-    return pd.DataFrame({})
+    regions.reset_index(drop=True, inplace=True)
+    departments.reset_index(drop=True, inplace=True)
+    regions['code'].str.zfill(3)
+    departments['region_code'].str.zfill(3)
+    reg_dep = regions.merge(departments, left_on="code",
+                            right_on="region_code",
+                            suffixes=("_reg", "_dep"))
+    reg_dep = reg_dep[["code_reg", "name_reg", "code_dep", "name_dep"]]
+    return reg_dep
 
 
 def merge_referendum_and_areas(referendum, regions_and_departments):
@@ -38,8 +54,19 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
+    exclude_codes = ["DOM", "COM", "TOM"]
+    copy_reg_dept = regions_and_departments[~regions_and_departments
+                                            ["code_reg"].
+                                            isin(exclude_codes)].copy()
+    referendum['Department code'] = referendum['Department code'].astype(str)
+    referendum['Department code'] = referendum['Department code'].str.zfill(2)
+    copy_reg_dept["code_dep"] = copy_reg_dept["code_dep"].astype(str)
+    copy_reg_dept["code_dep"] = copy_reg_dept["code_dep"].str.strip()
+    referendum_and_areas = referendum.merge(copy_reg_dept,
+                                            left_on="Department code",
+                                            right_on="code_dep")
 
-    return pd.DataFrame({})
+    return referendum_and_areas
 
 
 def compute_referendum_result_by_regions(referendum_and_areas):
@@ -48,8 +75,17 @@ def compute_referendum_result_by_regions(referendum_and_areas):
     The return DataFrame should be indexed by `code_reg` and have columns:
     ['name_reg', 'Registered', 'Abstentions', 'Null', 'Choice A', 'Choice B']
     """
+    region_counts = referendum_and_areas.groupby(["code_reg", "name_reg"]).agg(
+        {
+         "Registered": "sum",
+         "Abstentions": "sum",
+         "Null": "sum",
+         "Choice A": "sum",
+         "Choice B": "sum"
+        }).reset_index()
+    region_counts = region_counts.set_index("code_reg")
 
-    return pd.DataFrame({})
+    return region_counts
 
 
 def plot_referendum_map(referendum_result_by_regions):
@@ -61,8 +97,25 @@ def plot_referendum_map(referendum_result_by_regions):
       should display the rate of 'Choice A' over all expressed ballots.
     * Return a gpd.GeoDataFrame with a column 'ratio' containing the results.
     """
+    # Load geographic data
+    geo_data = gpd.read_file("data/regions.geojson")
 
-    return gpd.GeoDataFrame({})
+    # Merge geographic data with referendum results
+    merged = geo_data.merge(
+        referendum_result_by_regions,
+        left_on="code",
+        right_index=True
+    )
+
+    # Compute the ratio of 'Choice A' to all valid votes
+    merged["ratio"] = merged["Choice A"] / (merged["Choice A"] +
+                                            merged["Choice B"])
+
+    # Plot the data
+    merged.plot(column="ratio", cmap="coolwarm", legend=True)
+    plt.title("Referendum Results: Choice A Ratio")
+    plt.axis("off")
+    return merged
 
 
 if __name__ == "__main__":
@@ -81,3 +134,9 @@ if __name__ == "__main__":
 
     plot_referendum_map(referendum_results)
     plt.show()
+
+
+ref, reg, dept = load_data()
+print(ref.head())
+print(reg.head())
+print(dept.head())
