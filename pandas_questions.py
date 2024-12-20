@@ -33,7 +33,7 @@ def merge_regions_and_departments(regions, departments):
 
     merged_df = pd.merge(regions, departments,
                          left_on='code', right_on='region_code')
-            
+
     return pd.DataFrame({
         'code_reg': merged_df.code_x,
         'name_reg': merged_df.name_x,
@@ -48,9 +48,10 @@ def merge_referendum_and_areas(referendum, regions_and_departments):
     You can drop the lines relative to DOM-TOM-COM departments, and the
     french living abroad.
     """
-    
+
     for i in range(1, 10):
-        regions_and_departments['code_dep'] = regions_and_departments['code_dep'].str.replace(f"0{i}", f"{i}")
+        regions_and_departments['code_dep'] = regions_and_departments['code_dep'].str.replace(
+            f"0{i}", f"{i}")
 
     merged = pd.merge(referendum, regions_and_departments,
                       left_on='Department code', right_on='code_dep')
